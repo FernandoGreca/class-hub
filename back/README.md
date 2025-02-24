@@ -36,7 +36,7 @@ Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
    npm i -g @nestjs/cli
    ```
 
-4. Instale o Mongoose e suas dependências dentro do projeto:
+4. Instale o Mongoose e suas dependências dentro da pasta `back`:
 
    ```bash
    npm i @nestjs/mongoose mongoose
