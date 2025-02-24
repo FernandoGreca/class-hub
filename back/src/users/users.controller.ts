@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,12 +15,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // http:localhost:3000/users/criar-usuario
+  // http://localhost:3000/users/criar-usuario
   @Post('criar-usuario')
   create(@Body() createUserDto: CreateUserDto) {
+    createUserDto.matricula = criarMatricula();
+
     return this.usersService.create(createUserDto);
   }
 
+  // http://localhost:3000/users
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -34,7 +45,21 @@ export class UsersController {
   }
 }
 
-// POST - criação 
+// Funções
+function criarMatricula(): string {
+  let matricula = 'UNIFIL-';
+
+  const data = new Date().toISOString().replace(/[-:.]/g, '').slice(16, 18);
+  const numeroAleatorio = Math.floor(Math.random() * 10000);
+
+  matricula += `${data}${numeroAleatorio.toString().padStart(4, '0')}`;
+
+  console.log(matricula);
+
+  return matricula;
+}
+
+// POST - criação
 // PUT - edição ou criação
 // PATCH - edição
 // GET - pegar

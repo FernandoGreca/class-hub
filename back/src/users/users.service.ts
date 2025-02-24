@@ -7,13 +7,11 @@ import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UsersService {
-
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
-    
 
   create(createUserDto: CreateUserDto) {
     const novoUsuario = new this.userModel(createUserDto);
-    
+
     return novoUsuario.save();
   }
 
@@ -22,14 +20,14 @@ export class UsersService {
   }
 
   findOne(email: string) {
-    return `This action returns a #${email} user`;
+    return this.userModel.findOne({ email: email });
   }
 
   update(email: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${email} user`;
+    return this.userModel.updateOne({ email: email }, updateUserDto);
   }
 
   remove(email: string) {
-    return `This action removes a #${email} user`;
+    return this.userModel.deleteOne({ email: email });
   }
 }
