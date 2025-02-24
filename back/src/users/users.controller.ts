@@ -18,8 +18,6 @@ export class UsersController {
   // http://localhost:3000/users/criar-usuario
   @Post('criar-usuario')
   create(@Body() createUserDto: CreateUserDto) {
-    createUserDto.matricula = criarMatricula();
-
     return this.usersService.create(createUserDto);
   }
 
@@ -43,20 +41,6 @@ export class UsersController {
   remove(@Param('email') email: string) {
     return this.usersService.remove(email);
   }
-}
-
-// Funções
-function criarMatricula(): string {
-  let matricula = 'UNIFIL-';
-
-  const data = new Date().toISOString().replace(/[-:.]/g, '').slice(16, 18);
-  const numeroAleatorio = Math.floor(Math.random() * 10000);
-
-  matricula += `${data}${numeroAleatorio.toString().padStart(4, '0')}`;
-
-  console.log(matricula);
-
-  return matricula;
 }
 
 // POST - criação
