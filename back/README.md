@@ -42,10 +42,17 @@ Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
    npm i @nestjs/mongoose mongoose
    ```
 
-5. Para iniciar a aplicação backend em modo de desenvolvimento, execute o seguinte comando dentro da pasta `back`:
+5. Instale o Swagger, execute o seguinte comando dentro da pasta `back`:
+
+   ```bash
+   npm install --save @nestjs/swagger
+   ```   
+
+6. Para iniciar a aplicação backend em modo de desenvolvimento, execute o seguinte comando dentro da pasta `back`:
 
    ```bash
    npm run start:dev
    ```
+
 
 Isso inicializará a API do backend e permitirá o desenvolvimento ativo do projeto.

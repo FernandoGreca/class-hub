@@ -1,14 +1,19 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Disciplina } from "src/disciplinas/entities/disciplina.entity";
 
 export class CreateAtividadeDto {
+  @ApiProperty()
+  nome: string;
 
-    nome: string;
+  @ApiProperty()
+  descricao: string;
 
-    descricao: string;
+  @ApiProperty()
+  nota: number;
 
-    nota: number;
+  @ApiProperty()
+  data_entrega: Date;
 
-    data_entrega: Date;
-
-    disciplina: Disciplina;
+  @ApiProperty()
+  disciplina: Disciplina;
 }

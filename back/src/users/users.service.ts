@@ -13,7 +13,7 @@ export class UsersService {
     createUserDto.matricula = this.criarMatricula();
 
     const novoUsuario = new this.userModel(createUserDto);
-    
+
     return novoUsuario.save();
   }
 
@@ -21,8 +21,21 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  findOne(email: string) {
-    return this.userModel.findOne({ email: email });
+  async findOne(email: string) {
+    try {
+      let procurar_usuario = await this.userModel
+        .findOne({ email: email })
+        .exec();
+
+      if (!procurar_usuario) {
+        return 'Usuário não encontrado.';
+      }
+
+      return procurar_usuario;
+    } catch (error) {
+      console.error('Erro ao buscar usuário:', error);
+      return 'Erro ao buscar usuário.';
+    }
   }
 
   update(email: string, updateUserDto: UpdateUserDto) {
@@ -33,14 +46,14 @@ export class UsersService {
     return this.userModel.deleteOne({ email: email });
   }
 
-  // Métodos 
+  // Métodos
   criarMatricula(): string {
     let matricula = 'UNIFIL-';
 
-    const data = new Date().toISOString().replace(/[-:.]/g, '').slice(16, 18);
-    const numeroAleatorio = Math.floor(Math.random() * 10000);
+    const segundo = new Date().getSeconds().toString();
+    const numero_aleatorio = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
 
-    matricula += `${data}${numeroAleatorio.toString().padStart(4, '0')}`;
+    matricula += `${segundo}${numero_aleatorio}`;
 
     return matricula;
   }

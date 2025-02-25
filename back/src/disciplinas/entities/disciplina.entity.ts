@@ -1,29 +1,31 @@
-import { Prop, Schema } from "@nestjs/mongoose";
-import { Atividade } from "src/atividades/entities/atividade.entity";
-import { User } from "src/users/entities/user.entity";
+import { Prop, Schema } from '@nestjs/mongoose';
+import { Atividade } from 'src/atividades/entities/atividade.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Schema()
 export class Disciplina {
+  @Prop({ required: true, unique: true })
+  codigo_disciplina: string;
 
-    @Prop()
-    nome: string;
+  @Prop({ required: true })
+  nome: string;
 
-    @Prop()
-    descricao: string;
+  @Prop({ required: true })
+  descricao: string;
 
-    @Prop()
-    carga_horaria: number;
+  @Prop({ required: true })
+  carga_horaria: number;
 
-    @Prop()
-    professores: Array<User>;
+  @Prop()
+  professores: Array<User>;
 
-    @Prop()
-    alunos: Array<User>;
+  @Prop()
+  alunos: Array<User>;
 
-    @Prop()
-    atividades: Array<Atividade>;
+  @Prop()
+  atividades: Array<Atividade>;
 
-    constructor(init: Partial<Disciplina>) {
-        Object.assign(this, init);
-    }
+  constructor(init: Partial<Disciplina>) {
+    Object.assign(this, init);
+  }
 }
