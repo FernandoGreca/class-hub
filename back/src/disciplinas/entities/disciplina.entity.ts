@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Atividade } from 'src/atividades/entities/atividade.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -29,3 +29,5 @@ export class Disciplina {
     Object.assign(this, init);
   }
 }
+
+export const DisciplinaSchema = SchemaFactory.createForClass(Disciplina);

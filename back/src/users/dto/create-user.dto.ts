@@ -14,15 +14,15 @@ export class CreateUserDto {
 
   matricula: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true })
   ano: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   e_professor: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   disciplinas: Array<Disciplina>;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   presencas: Array<Presenca>;
 }

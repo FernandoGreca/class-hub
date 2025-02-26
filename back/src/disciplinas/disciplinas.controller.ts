@@ -17,18 +17,18 @@ export class DisciplinasController {
     return this.disciplinasService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.disciplinasService.findOne(+id);
+  @Get(':codigo_disciplina')
+  findOne(@Param('codigo_disciplina') codigo_disciplina: string) {
+    return this.disciplinasService.findOne(codigo_disciplina);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDisciplinaDto: UpdateDisciplinaDto) {
-    return this.disciplinasService.update(+id, updateDisciplinaDto);
+  @Patch(':codigo_disciplina')
+  update(@Param('codigo_disciplina') codigo_disciplina: string, @Body() updateDisciplinaDto: UpdateDisciplinaDto) {
+    return this.disciplinasService.update(codigo_disciplina, updateDisciplinaDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.disciplinasService.remove(+id);
+  @Delete(':codigo_disciplina')
+  remove(@Param('codigo_disciplina') codigo_disciplina: string) {
+    return this.disciplinasService.remove(codigo_disciplina);
   }
 }

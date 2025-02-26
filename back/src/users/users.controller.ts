@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -40,6 +41,24 @@ export class UsersController {
   @Delete(':email')
   remove(@Param('email') email: string) {
     return this.usersService.remove(email);
+  }
+
+  @Post('adicionar-disciplina')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email' },
+        codigo_disciplina: { type: 'string' },
+      },
+      required: ['email', 'codigo_disciplina'],
+    },
+  })
+  adicionarDisciplina(
+    @Body() body: { email: string; codigo_disciplina: string },
+  ) {
+    const { email, codigo_disciplina } = body;
+    return this.usersService.adicionarDisciplina(email, codigo_disciplina);
   }
 }
 

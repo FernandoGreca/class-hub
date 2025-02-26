@@ -1,37 +1,36 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Disciplina } from "src/disciplinas/entities/disciplina.entity";
-import { Presenca } from "src/presencas/entities/presenca.entity";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
+import { Presenca } from 'src/presencas/entities/presenca.entity';
 
 @Schema()
 export class User {
+  @Prop({ required: true })
+  nome: string;
 
-    @Prop({ required: true })
-    nome: string;
+  @Prop({ required: true, unique: true })
+  email: string;
 
-    @Prop({ required: true, unique: true })
-    email: string;
+  @Prop({ required: true })
+  senha: string;
 
-    @Prop({ required: true })
-    senha: string;
+  @Prop()
+  matricula: string;
 
-    @Prop()
-    matricula: string;
+  @Prop({ required: true })
+  ano: number;
 
-    @Prop()
-    ano: number;
+  @Prop()
+  e_professor: boolean;
 
-    @Prop()
-    e_professor: boolean;
+  @Prop()
+  disciplinas: Array<Disciplina>;
 
-    @Prop()
-    disciplinas: Array<Disciplina>;
+  @Prop()
+  presencas: Array<Presenca>;
 
-    @Prop()
-    presencas: Array<Presenca>;
-
-    constructor(init: Partial<User>) {
-        Object.assign(this, init);
-    }
+  constructor(init: Partial<User>) {
+    Object.assign(this, init);
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

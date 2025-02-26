@@ -3,24 +3,24 @@ import { Atividade } from 'src/atividades/entities/atividade.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export class CreateDisciplinaDto {
-  @ApiProperty()
+  @ApiProperty({ required: true })
   codigo_disciplina: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true })
   nome: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true })
   descricao: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true })
   carga_horaria: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   professores: Array<User>;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   alunos: Array<User>;
-  
-  @ApiProperty()
+
+  @ApiProperty({ required: false })
   atividades: Array<Atividade>;
 }

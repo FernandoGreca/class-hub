@@ -1,26 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDisciplinaDto } from './dto/create-disciplina.dto';
 import { UpdateDisciplinaDto } from './dto/update-disciplina.dto';
+import { Disciplina } from './entities/disciplina.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class DisciplinasService {
+  constructor(
+    @InjectModel(Disciplina.name) private disciplinaModel: Model<Disciplina>,
+  ) {}
+
   create(createDisciplinaDto: CreateDisciplinaDto) {
-    return 'This action adds a new disciplina';
+    const novaDisciplina = new this.disciplinaModel(createDisciplinaDto);
+    return novaDisciplina.save();
   }
 
   findAll() {
-    return `This action returns all disciplinas`;
+    return this.disciplinaModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} disciplina`;
+  async findOne(codigo_disciplina: string) {
+    try {
+      let procurar_disciplina = await this.disciplinaModel
+        .findOne({ codigo_disciplina: codigo_disciplina })
+        .exec();
+
+      if (!procurar_disciplina) {
+        return 'Disciplina não encontrada.';
+      }
+
+      return procurar_disciplina;
+    } catch (error) {
+      console.error('Erro ao buscar disciplina:', error);
+      return 'Erro ao buscar disciplina.';
+    }
   }
 
-  update(id: number, updateDisciplinaDto: UpdateDisciplinaDto) {
-    return `This action updates a #${id} disciplina`;
+  async update(
+    codigo_disciplina: string,
+    updateDisciplinaDto: UpdateDisciplinaDto,
+  ) {
+    return await this.disciplinaModel.updateOne(
+      { codigo_disciplina },
+      updateDisciplinaDto,
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} disciplina`;
+  async remove(codigo_disciplina: string) {
+    return await this.disciplinaModel.deleteOne({ codigo_disciplina });
   }
 }
