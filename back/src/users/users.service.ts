@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Model } from 'mongoose';
@@ -26,20 +26,15 @@ export class UsersService {
   }
 
   async findOne(email: string) {
-    try {
-      let procurar_usuario = await this.userModel
-        .findOne({ email: email })
-        .exec();
+    let procurar_usuario = await this.userModel
+      .findOne({ email: email })
+      .exec();
 
-      if (!procurar_usuario) {
-        return 'Usuário não encontrado.';
-      }
-
-      return procurar_usuario;
-    } catch (error) {
-      console.error('Erro ao buscar usuário:', error);
-      return 'Erro ao buscar usuário.';
+    if (!procurar_usuario) {
+      return new NotFoundException('Usuário não encontrado.');
     }
+
+    return procurar_usuario;
   }
 
   update(email: string, updateUserDto: UpdateUserDto) {
@@ -56,8 +51,8 @@ export class UsersService {
       codigo_disciplina: codigo_disciplina,
     });
 
-    if (typeof usuario === "string") return usuario;
-    if (typeof disciplina === "string" || disciplina === null) return disciplina;
+    if (usuario instanceof NotFoundException) return usuario;
+    if (disciplina instanceof NotFoundException || disciplina == null) return disciplina;
 
     const { professores, alunos, atividades, ...mostrar_disciplina } =
       disciplina.toJSON();
@@ -68,8 +63,9 @@ export class UsersService {
     disciplina.alunos.push(mostrar_aluno as any);
 
     await disciplina.save();
+    await usuario.save();
 
-    return await usuario.save();
+    return usuario.disciplinas;
   }
 
   // Métodos

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDisciplinaDto } from './dto/create-disciplina.dto';
 import { UpdateDisciplinaDto } from './dto/update-disciplina.dto';
 import { Disciplina } from './entities/disciplina.entity';
@@ -21,20 +21,15 @@ export class DisciplinasService {
   }
 
   async findOne(codigo_disciplina: string) {
-    try {
-      let procurar_disciplina = await this.disciplinaModel
-        .findOne({ codigo_disciplina: codigo_disciplina })
-        .exec();
+    let procurar_disciplina = await this.disciplinaModel
+      .findOne({ codigo_disciplina: codigo_disciplina })
+      .exec();
 
-      if (!procurar_disciplina) {
-        return 'Disciplina não encontrada.';
-      }
-
-      return procurar_disciplina;
-    } catch (error) {
-      console.error('Erro ao buscar disciplina:', error);
-      return 'Erro ao buscar disciplina.';
+    if (!procurar_disciplina) {
+      return new NotFoundException('Disciplina não encontrada.');
     }
+
+    return procurar_disciplina;
   }
 
   async update(
