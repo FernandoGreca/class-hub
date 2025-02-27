@@ -1,9 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
 import { Presenca } from 'src/presencas/entities/presenca.entity';
 
 @Schema()
 export class User {
+  @Prop({ default: () => new Types.ObjectId() })
+  _id: string;
+
   @Prop({ required: true })
   nome: string;
 
@@ -22,15 +26,16 @@ export class User {
   @Prop()
   e_professor: boolean;
 
-  @Prop()
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'Disciplina'})
   disciplinas: Array<Disciplina>;
 
+  // Verificar se esse array é necessario...
   @Prop()
   presencas: Array<Presenca>;
 
   constructor(init: Partial<User>) {
     Object.assign(this, init);
-  }
+  } 
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

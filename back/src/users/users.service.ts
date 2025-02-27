@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Model } from 'mongoose';
@@ -25,10 +29,8 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findOne(email: string) {
-    let procurar_usuario = await this.userModel
-      .findOne({ email: email })
-      .exec();
+  async findOne(id: string) {
+    let procurar_usuario = await this.userModel.findOne({ _id: id }).exec();
 
     if (!procurar_usuario) {
       return new NotFoundException('Usuário não encontrado.');
@@ -37,40 +39,61 @@ export class UsersService {
     return procurar_usuario;
   }
 
-  update(email: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.updateOne({ email: email }, updateUserDto);
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.userModel.updateOne({ _id: id }, updateUserDto);
   }
 
-  remove(email: string) {
-    return this.userModel.deleteOne({ email: email });
+  remove(id: string) {
+    return this.userModel.deleteOne({ _id: id });
   }
 
-  async adicionarDisciplina(email: string, codigo_disciplina: string) {
-    let usuario = await this.findOne(email);
+  async adicionarDisciplina(id: string, codigo_disciplina: string) {
+    let usuario = await this.findOne(id);
+
+    if (usuario instanceof NotFoundException) return usuario;
+
     let disciplina = await this.disciplinaModel.findOne({
       codigo_disciplina: codigo_disciplina,
     });
 
-    if (usuario instanceof NotFoundException) return usuario;
-    if (disciplina instanceof NotFoundException || disciplina == null) return disciplina;
+    if (disciplina instanceof NotFoundException || disciplina == null)
+      return disciplina;
+    if (usuario.e_professor == true)
+      throw new ConflictException(
+        'Um professor não pode cursar uma disciplina.',
+      );
 
-    const { professores, alunos, atividades, ...mostrar_disciplina } =
+    const { professores, alunos, atividades, ...filtro_disciplina } =
       disciplina.toJSON();
-    const { disciplinas, presencas, e_professor, senha, ...mostrar_aluno } =
+    const { disciplinas, presencas, e_professor, senha, ...filtro_aluno } =
       usuario.toJSON();
 
-    usuario.disciplinas.push(mostrar_disciplina as any);
-    disciplina.alunos.push(mostrar_aluno as any);
+    for (const aluno of disciplina.alunos) {
+      if (aluno._id.match(id)) {
+        throw new ConflictException('Aluno já cursa essa disciplina.');
+      }
+    }
 
-    await disciplina.save();
-    await usuario.save();
+    usuario.disciplinas.push(filtro_disciplina as any);
+    disciplina.alunos.push(filtro_aluno as any);
 
-    return usuario.disciplinas;
+    await Promise.all([disciplina.save(), usuario.save()]);
+
+    const {
+      email: retirar_email,
+      senha: retirar_senha,
+      ano: retirar_ano,
+      e_professor: retirar_e_professor,
+      presencas: retirar_presencas,
+      ...retornar_usuario
+    } = usuario.toJSON();
+
+    return retornar_usuario;
   }
 
   // Métodos
   criarMatricula(): string {
-    let matricula = "UNIFIL-";
+    let matricula = 'UNIFIL-';
 
     const segundo = new Date().getSeconds().toString();
     const numero_aleatorio = Math.floor(Math.random() * 10000)

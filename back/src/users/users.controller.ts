@@ -28,19 +28,19 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':email')
-  findOne(@Param('email') email: string) {
-    return this.usersService.findOne(email);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
   }
 
-  @Patch(':email')
-  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(email, updateUserDto);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
-  @Delete(':email')
-  remove(@Param('email') email: string) {
-    return this.usersService.remove(email);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 
   @Post('adicionar-disciplina')
@@ -48,17 +48,17 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        email: { type: 'string', format: 'email' },
+        _id_user: { type: 'string', format: 'ObjectId' },
         codigo_disciplina: { type: 'string' },
       },
-      required: ['email', 'codigo_disciplina'],
+      required: ['id', 'codigo_disciplina'],
     },
   })
   adicionarDisciplina(
-    @Body() body: { email: string; codigo_disciplina: string },
+    @Body() body: { _id_user: string; codigo_disciplina: string },
   ) {
-    const { email, codigo_disciplina } = body;
-    return this.usersService.adicionarDisciplina(email, codigo_disciplina);
+    const { _id_user, codigo_disciplina } = body;
+    return this.usersService.adicionarDisciplina(_id_user, codigo_disciplina);
   }
 }
 

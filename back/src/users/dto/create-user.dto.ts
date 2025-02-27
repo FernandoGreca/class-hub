@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectId } from 'mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
 import { Presenca } from 'src/presencas/entities/presenca.entity';
 
 export class CreateUserDto {
+
+  _id: string;
+
   @ApiProperty({ required: true })
   nome: string;
 

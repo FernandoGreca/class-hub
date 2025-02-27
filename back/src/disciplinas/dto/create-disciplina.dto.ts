@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectId } from 'mongoose';
 import { Atividade } from 'src/atividades/entities/atividade.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export class CreateDisciplinaDto {
+  
+  _id: string;
+
   @ApiProperty({ required: true })
   codigo_disciplina: string;
 

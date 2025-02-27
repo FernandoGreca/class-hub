@@ -12,8 +12,8 @@ export class DisciplinasService {
   ) {}
 
   create(createDisciplinaDto: CreateDisciplinaDto) {
-    const novaDisciplina = new this.disciplinaModel(createDisciplinaDto);
-    return novaDisciplina.save();
+    const nova_disciplina = new this.disciplinaModel(createDisciplinaDto);
+    return nova_disciplina.save();
   }
 
   findAll() {

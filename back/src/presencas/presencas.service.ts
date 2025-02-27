@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePresencaDto } from './dto/create-presenca.dto';
 import { UpdatePresencaDto } from './dto/update-presenca.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Presenca } from './entities/presenca.entity';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PresencasService {
+  constructor(
+    @InjectModel(Presenca.name) private presencaModel: Model<Presenca>,
+  ) {}
+
   create(createPresencaDto: CreatePresencaDto) {
-    return 'This action adds a new presenca';
+    const nova_presenca = new this.presencaModel(createPresencaDto);
+
+    return nova_presenca.save();
   }
 
-  findAll() {
-    return `This action returns all presencas`;
+  async findAll() {
+    return await this.presencaModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} presenca`;
+  async findOne(id: number) {
+    let procurar_presenca = await this.presencaModel
+      .findOne({ _id: id })
+      .exec();
+
+    if (!procurar_presenca) {
+      return new NotFoundException('Presença não encontrada.');
+    }
+
+    return procurar_presenca;
   }
 
-  update(id: number, updatePresencaDto: UpdatePresencaDto) {
-    return `This action updates a #${id} presenca`;
+  async update(id: number, updatePresencaDto: UpdatePresencaDto) {
+    return await this.presencaModel.updateOne({ _id: id }, updatePresencaDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} presenca`;
+  async remove(id: number) {
+    return await this.presencaModel.deleteOne({ _id: id });
   }
 }
