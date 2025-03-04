@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Types } from 'mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Schema()
 export class Presenca {
@@ -14,10 +15,11 @@ export class Presenca {
   @Prop({ required: true })
   presenca: boolean;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Disciplina' })
+  @Prop()
   disciplina: Disciplina;
 
-  // Verificar se será necessário colocar um campo que referencie um usuário...
+  @Prop()
+  aluno: User;
 
   constructor(init: Partial<Presenca>) {
     Object.assign(this, init);

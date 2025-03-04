@@ -19,7 +19,7 @@ export class Atividade {
   @Prop()
   data_entrega: Date;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Disciplina' })
+  @Prop()
   disciplina: Disciplina;
 
   constructor(init: Partial<Atividade>) {

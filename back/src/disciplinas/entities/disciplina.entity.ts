@@ -20,13 +20,13 @@ export class Disciplina {
   @Prop({ required: true })
   carga_horaria: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop()
   professores: Array<User>;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop()
   alunos: Array<User>;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Atividade' })
+  @Prop()
   atividades: Array<Atividade>;
 
   constructor(init: Partial<Disciplina>) {

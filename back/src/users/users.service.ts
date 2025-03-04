@@ -10,12 +10,14 @@ import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
 import { hash, genSalt, compare } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Disciplina.name) private disciplinaModel: Model<Disciplina>,
+    private jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -28,17 +30,22 @@ export class UsersService {
     return new User(resultado.toJSON());
   }
 
-  async login(email: string, senha: string): Promise<boolean> {
+  async login(email: string, senha: string) {
     const usuario = await this.userModel.findOne({ email }).exec();
 
-    if (usuario == null) return false;
+    if (!usuario || !usuario.senha)
+      return { message: 'Usuário não encontrado, tente novamente...' };
 
-    if (!usuario.senha) {
-      console.error('Erro: a senha do usuário está nula ou vazia.');
-      return false;
-    }
+    const senha_correta = await compare(senha, usuario.senha);
+    if (!senha_correta)
+      return { message: 'Senha incorreta, tente novamente...' };
 
-    return compare(senha, usuario.senha);
+    const token = this.jwtService.sign({
+      id: usuario._id,
+      email: usuario.email,
+    });
+
+    return token;
   }
 
   findAll() {
@@ -81,7 +88,7 @@ export class UsersService {
 
     const { professores, alunos, atividades, ...filtro_disciplina } =
       disciplina.toJSON();
-    const { disciplinas, presencas, e_professor, senha, ...filtro_aluno } =
+    const { disciplinas, e_professor, senha, ...filtro_aluno } =
       usuario.toJSON();
 
     for (const aluno of disciplina.alunos) {
@@ -100,7 +107,61 @@ export class UsersService {
       senha: retirar_senha,
       ano: retirar_ano,
       e_professor: retirar_e_professor,
-      presencas: retirar_presencas,
+      ...retornar_usuario
+    } = usuario.toJSON();
+
+    return retornar_usuario;
+  }
+
+  async removerDisciplina(id_user: string, codigo_disciplina: string) {
+    let usuario = await this.findOne(id_user);
+
+    if (usuario instanceof NotFoundException || usuario == null) return usuario;
+
+    let disciplina = await this.disciplinaModel.findOne({
+      codigo_disciplina: codigo_disciplina,
+    });
+
+    if (disciplina instanceof NotFoundException || disciplina == null)
+      return disciplina;
+   
+    if (usuario.e_professor == true)
+      throw new ConflictException('Um professor não pode remover disciplinas.');
+
+    const { professores, alunos, atividades, ...filtro_disciplina } =
+      disciplina.toJSON();
+    const { disciplinas, e_professor, senha, ...filtro_aluno } =
+      usuario.toJSON();
+
+    const alunoIndex = disciplina.alunos.findIndex((aluno) =>
+      aluno._id.match(id_user),
+    );
+
+    if (alunoIndex === -1) {
+      throw new ConflictException(
+        'Aluno não está matriculado nessa disciplina.',
+      );
+    }
+
+    disciplina.alunos.splice(alunoIndex, 1);
+
+    const disciplinaIndex = usuario.disciplinas.findIndex(
+      (disc) => disc.codigo_disciplina === codigo_disciplina,
+    );
+
+    if (disciplinaIndex === -1) {
+      throw new ConflictException('Disciplina não está associada ao aluno.');
+    }
+
+    usuario.disciplinas.splice(disciplinaIndex, 1);
+
+    await Promise.all([disciplina.save(), usuario.save()]);
+
+    const {
+      email: retirar_email,
+      senha: retirar_senha,
+      ano: retirar_ano,
+      e_professor: retirar_e_professor,
       ...retornar_usuario
     } = usuario.toJSON();
 

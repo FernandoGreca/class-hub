@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -53,6 +54,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
@@ -75,7 +77,27 @@ export class UsersController {
     const { id_user, codigo_disciplina } = body;
     return this.usersService.adicionarDisciplina(id_user, codigo_disciplina);
   }
+
+  @Post('remover-disciplina')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id_user: { type: 'string', format: 'ObjectId' },
+        codigo_disciplina: { type: 'string' },
+      },
+      required: ['id', 'codigo_disciplina'],
+    },
+  })
+  removerDisciplina(
+    @Body() body: { id_user: string; codigo_disciplina: string },
+  ) {
+    const { id_user, codigo_disciplina } = body;
+    return this.usersService.removerDisciplina(id_user, codigo_disciplina);
+  }
 }
+
+
 
 // POST - criação
 // PUT - edição ou criação

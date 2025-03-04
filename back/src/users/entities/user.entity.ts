@@ -26,12 +26,8 @@ export class User {
   @Prop()
   e_professor: boolean;
 
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'Disciplina'})
-  disciplinas: Array<Disciplina>;
-
-  // Verificar se esse array é necessario...
   @Prop()
-  presencas: Array<Presenca>;
+  disciplinas: Array<Disciplina>;
 
   constructor(init: Partial<User>) {
     Object.assign(this, init);

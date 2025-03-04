@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { DisciplinasModule } from './disciplinas/disciplinas.module';
 import { PresencasModule } from './presencas/presencas.module';
 import { AtividadesModule } from './atividades/atividades.module';
+import { ConfigModule } from '@nestjs/config';
 
 // mongodb+srv://admim:admim@cluster0.6rcxx.mongodb.net/projeto-faculdade - Banco liberado apenas para ip Fernando
 // mongodb+srv://admim:admim@cluster0.qe1fc.mongodb.net/faculdade - Banco liberado para todos ip's
@@ -15,6 +16,7 @@ import { AtividadesModule } from './atividades/atividades.module';
     MongooseModule.forRoot(
       'mongodb+srv://admim:admim@cluster0.qe1fc.mongodb.net/faculdade',
     ),
+    ConfigModule.forRoot(),
     UsersModule,
     DisciplinasModule,
     PresencasModule,
