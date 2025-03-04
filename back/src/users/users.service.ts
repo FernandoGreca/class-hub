@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
+import { hash, genSalt, compare } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -17,12 +18,27 @@ export class UsersService {
     @InjectModel(Disciplina.name) private disciplinaModel: Model<Disciplina>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     createUserDto.matricula = this.criarMatricula();
+    createUserDto.senha = await this.hashSenha(createUserDto.senha);
 
     const novoUsuario = new this.userModel(createUserDto);
+    const resultado = await novoUsuario.save();
 
-    return novoUsuario.save();
+    return new User(resultado.toJSON());
+  }
+
+  async login(email: string, senha: string): Promise<boolean> {
+    const usuario = await this.userModel.findOne({ email }).exec();
+
+    if (usuario == null) return false;
+
+    if (!usuario.senha) {
+      console.error('Erro: a senha do usuário está nula ou vazia.');
+      return false;
+    }
+
+    return compare(senha, usuario.senha);
   }
 
   findAll() {
@@ -40,17 +56,17 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.updateOne({ _id: id }, updateUserDto);
+    return this.userModel.updateOne({ _id: id }, updateUserDto).exec();
   }
 
   remove(id: string) {
-    return this.userModel.deleteOne({ _id: id });
+    return this.userModel.deleteOne({ _id: id }).exec();
   }
 
-  async adicionarDisciplina(id: string, codigo_disciplina: string) {
-    let usuario = await this.findOne(id);
+  async adicionarDisciplina(id_user: string, codigo_disciplina: string) {
+    let usuario = await this.findOne(id_user);
 
-    if (usuario instanceof NotFoundException) return usuario;
+    if (usuario instanceof NotFoundException || usuario == null) return usuario;
 
     let disciplina = await this.disciplinaModel.findOne({
       codigo_disciplina: codigo_disciplina,
@@ -69,7 +85,7 @@ export class UsersService {
       usuario.toJSON();
 
     for (const aluno of disciplina.alunos) {
-      if (aluno._id.match(id)) {
+      if (aluno._id.match(id_user)) {
         throw new ConflictException('Aluno já cursa essa disciplina.');
       }
     }
@@ -103,5 +119,10 @@ export class UsersService {
     matricula += `${segundo}${numero_aleatorio}`;
 
     return matricula;
+  }
+
+  private async hashSenha(password: string) {
+    const salt = await genSalt(10);
+    return hash(password, salt);
   }
 }

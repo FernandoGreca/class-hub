@@ -27,10 +27,10 @@ export class AtividadesService {
   }
 
   async update(id: number, updateAtividadeDto: UpdateAtividadeDto) {
-    return await this.atividadeModel.updateOne({ _id: id}, updateAtividadeDto);
+    return await this.atividadeModel.updateOne({ _id: id}, updateAtividadeDto).exec();
   }
 
   async remove(id: number) {
-    return await this.atividadeModel.deleteOne({ _id: id});
+    return await this.atividadeModel.deleteOne({ _id: id}).exec();
   }
 }

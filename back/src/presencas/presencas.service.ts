@@ -11,10 +11,11 @@ export class PresencasService {
     @InjectModel(Presenca.name) private presencaModel: Model<Presenca>,
   ) {}
 
-  create(createPresencaDto: CreatePresencaDto) {
+  async create(createPresencaDto: CreatePresencaDto) {
     const nova_presenca = new this.presencaModel(createPresencaDto);
+    const resultado = await nova_presenca.save();
 
-    return nova_presenca.save();
+    return new Presenca(resultado.toJSON());
   }
 
   async findAll() {
@@ -34,10 +35,10 @@ export class PresencasService {
   }
 
   async update(id: number, updatePresencaDto: UpdatePresencaDto) {
-    return await this.presencaModel.updateOne({ _id: id }, updatePresencaDto);
+    return await this.presencaModel.updateOne({ _id: id }, updatePresencaDto).exec();
   }
 
   async remove(id: number) {
-    return await this.presencaModel.deleteOne({ _id: id });
+    return await this.presencaModel.deleteOne({ _id: id }).exec();
   }
 }

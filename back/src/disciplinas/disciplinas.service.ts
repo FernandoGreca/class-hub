@@ -11,9 +11,11 @@ export class DisciplinasService {
     @InjectModel(Disciplina.name) private disciplinaModel: Model<Disciplina>,
   ) {}
 
-  create(createDisciplinaDto: CreateDisciplinaDto) {
+  async create(createDisciplinaDto: CreateDisciplinaDto) {
     const nova_disciplina = new this.disciplinaModel(createDisciplinaDto);
-    return nova_disciplina.save();
+    const resultado = await nova_disciplina.save();
+
+    return new Disciplina(resultado.toJSON());
   }
 
   findAll() {
@@ -39,10 +41,10 @@ export class DisciplinasService {
     return await this.disciplinaModel.updateOne(
       { codigo_disciplina },
       updateDisciplinaDto,
-    );
+    ).exec();
   }
 
   async remove(codigo_disciplina: string) {
-    return await this.disciplinaModel.deleteOne({ codigo_disciplina });
+    return await this.disciplinaModel.deleteOne({ codigo_disciplina }).exec();
   }
 }
