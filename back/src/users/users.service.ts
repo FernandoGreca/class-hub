@@ -10,14 +10,14 @@ import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
 import { hash, genSalt, compare } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Disciplina.name) private disciplinaModel: Model<Disciplina>,
-    private jwtService: JwtService,
+    private authService: AuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -30,26 +30,18 @@ export class UsersService {
     return new User(resultado.toJSON());
   }
 
-  async login(email: string, senha: string) {
-    const usuario = await this.userModel.findOne({ email }).exec();
-
-    if (!usuario || !usuario.senha)
-      return { message: 'Usuário não encontrado, tente novamente...' };
-
-    const senha_correta = await compare(senha, usuario.senha);
-    if (!senha_correta)
-      return { message: 'Senha incorreta, tente novamente...' };
-
-    const token = this.jwtService.sign({
-      id: usuario._id,
-      email: usuario.email,
-    });
-
-    return token;
-  }
-
   findAll() {
     return this.userModel.find().exec();
+  }
+
+  async findByEmail(email: string) {
+    let procurar_usuario = await this.userModel.findOne({ email }).exec();
+
+    if (!procurar_usuario) {
+      return new NotFoundException('Usuário não encontrado.');
+    }
+
+    return procurar_usuario;
   }
 
   async findOne(id: string) {
@@ -124,7 +116,7 @@ export class UsersService {
 
     if (disciplina instanceof NotFoundException || disciplina == null)
       return disciplina;
-   
+
     if (usuario.e_professor == true)
       throw new ConflictException('Um professor não pode remover disciplinas.');
 

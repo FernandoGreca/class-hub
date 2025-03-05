@@ -12,6 +12,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -23,26 +24,27 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Post('login')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string' },
-        senha: { type: 'string' },
-      },
-      required: ['email', 'senha'],
-    },
-  })
-  login (@Body() body: { email: string; senha: string }) {
-    return this.usersService.login(body.email, body.senha);
-  }
+  // @Post('login')
+  // @ApiBody({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       email: { type: 'string' },
+  //       senha: { type: 'string' },
+  //     },
+  //     required: ['email', 'senha'],
+  //   },
+  // })
+  // login(@Body() body: { email: string; senha: string }) {
+  //   return this.usersService.login(body.email, body.senha);
+  // }
 
   // http://localhost:3000/users
   @Get()
+  @UseGuards(AuthGuard)
   findAll() {
     return this.usersService.findAll();
-  } 
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -53,7 +55,6 @@ export class UsersController {
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {
