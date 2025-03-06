@@ -11,9 +11,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -41,7 +43,6 @@ export class UsersController {
 
   // http://localhost:3000/users
   @Get()
-  @UseGuards(AuthGuard)
   findAll() {
     return this.usersService.findAll();
   }
