@@ -38,13 +38,14 @@ export class DisciplinasService {
     codigo_disciplina: string,
     updateDisciplinaDto: UpdateDisciplinaDto,
   ) {
-    return await this.disciplinaModel.updateOne(
-      { codigo_disciplina },
-      updateDisciplinaDto,
-    ).exec();
+    return await this.disciplinaModel
+      .updateOne({ codigo_disciplina }, updateDisciplinaDto)
+      .exec();
   }
 
   async remove(codigo_disciplina: string) {
     return await this.disciplinaModel.deleteOne({ codigo_disciplina }).exec();
   }
+
+  
 }

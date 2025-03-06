@@ -5,20 +5,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { DisciplinasModule } from 'src/disciplinas/disciplinas.module';
 import { PresencasModule } from 'src/presencas/presencas.module';
-import { JwtModule } from '@nestjs/jwt';
+import { AuthService } from 'src/auth/auth.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    JwtModule.register({
-      secret: process.env.JWT_SEGREDO || 'projeto-faculdade-classroom', 
-      signOptions: { expiresIn: '1h' },
-    }),
     DisciplinasModule,
     PresencasModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, AuthService],
   exports: [UsersService],
 })
 export class UsersModule {}

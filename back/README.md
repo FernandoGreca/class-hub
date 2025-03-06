@@ -48,7 +48,23 @@ Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
    npm install --save @nestjs/swagger
    ```   
 
-6. Para iniciar a aplicação backend em modo de desenvolvimento, execute o seguinte comando dentro da pasta `back`:
+6. Instale o bcrypt, execute o seguinte comando dentro da pasta `back`:
+
+   ```bash
+   npm i bcrypt
+   ```     
+
+   ```bash
+   npm i -D @types/bcrypt
+   ```
+
+7. Instale o jwt, execute o seguinte comando dentro da pasta `back`:
+
+   ```bash
+   npm install --save @nestjs/jwt
+   ```
+
+8. Para iniciar a aplicação backend em modo de desenvolvimento, execute o seguinte comando dentro da pasta `back`:
 
    ```bash
    npm run start:dev
