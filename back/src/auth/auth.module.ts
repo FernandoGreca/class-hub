@@ -9,7 +9,7 @@ import { AuthController } from './auth.controller';
     UsersModule,
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
+      secret: "projeto-faculdade-classroom",
       signOptions: { expiresIn: '1h' },
     }),
   ],
@@ -18,3 +18,4 @@ import { AuthController } from './auth.controller';
   exports: [AuthService],
 })
 export class AuthModule {}
+

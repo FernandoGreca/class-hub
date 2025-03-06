@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +18,18 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string' },
+        senha: { type: 'string' },
+      },
+      required: ['email', 'senha'],
+    },
+  })
+  signIn(@Body() body: {email: string, senha: string}) {
+    return this.authService.signIn(body.email, body.senha);
   }
 
   @UseGuards(AuthGuard)

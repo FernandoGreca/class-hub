@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
@@ -6,7 +6,7 @@ import { compare } from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
@@ -17,7 +17,7 @@ export class AuthService {
     const usuario = await this.usersService.findByEmail(email);
 
     if (!usuario || usuario instanceof NotFoundException || !usuario.senha)
-       throw new NotFoundException();
+      throw new NotFoundException();
 
     if (!compare(senha, usuario.senha)) {
       throw new UnauthorizedException();
