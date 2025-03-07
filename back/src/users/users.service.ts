@@ -160,6 +160,25 @@ export class UsersService {
     return retornar_usuario;
   }
 
+  async alterarSenha(email: string, senha_nova: string) {
+    let usuario_alterar = await this.findByEmail(email);
+
+    if (!usuario_alterar || usuario_alterar instanceof NotFoundException)
+      throw new NotFoundException();
+
+    usuario_alterar.senha = await this.hashSenha(senha_nova);
+
+    if (usuario_alterar?._id) {
+      await this.userModel.updateOne(
+        { _id: usuario_alterar?._id },
+        { senha: usuario_alterar.senha },
+      ).exec();
+      return { message: 'Senha alterada com sucesso!' };
+    } else {
+      return { message: 'Erro ao alterar senha!' };
+    }
+  }
+
   // Métodos
   criarMatricula(): string {
     let matricula = 'UNIFIL-';

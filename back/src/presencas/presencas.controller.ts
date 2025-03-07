@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PresencasService } from './presencas.service';
 import { CreatePresencaDto } from './dto/create-presenca.dto';
 import { UpdatePresencaDto } from './dto/update-presenca.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('presencas')
 export class PresencasController {
   constructor(private readonly presencasService: PresencasService) {}

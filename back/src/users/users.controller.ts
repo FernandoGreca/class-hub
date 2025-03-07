@@ -88,7 +88,7 @@ export class UsersController {
         id_user: { type: 'string', format: 'ObjectId' },
         codigo_disciplina: { type: 'string' },
       },
-      required: ['id', 'codigo_disciplina'],
+      required: ['id_user', 'codigo_disciplina'],
     },
   })
   removerDisciplina(
@@ -96,6 +96,21 @@ export class UsersController {
   ) {
     const { id_user, codigo_disciplina } = body;
     return this.usersService.removerDisciplina(id_user, codigo_disciplina);
+  }
+
+  @Post('alterar-senha')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email' },
+        senha_nova: { type: 'string' },
+      },
+      required: ['email', 'senha_nova'],
+    },
+  })
+  alterarSenha(@Body() body: {email: string; senha_nova: string}) {
+    return this.usersService.alterarSenha(body.email, body.senha_nova);
   }
 }
 
