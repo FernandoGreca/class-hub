@@ -23,16 +23,21 @@ export class PresencasController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.presencasService.findOne(+id);
+    return this.presencasService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePresencaDto: UpdatePresencaDto) {
-    return this.presencasService.update(+id, updatePresencaDto);
+    return this.presencasService.update(id, updatePresencaDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.presencasService.remove(+id);
+    return this.presencasService.remove(id);
+  }
+
+  @Get('presenca/:id_aluno')
+  findPresenca(@Param('id_aluno') id_aluno: string) {
+    return this.presencasService.encontraListaPresenca(id_aluno);
   }
 }

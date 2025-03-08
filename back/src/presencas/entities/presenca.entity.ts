@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -15,15 +15,14 @@ export class Presenca {
   @Prop({ required: true })
   presenca: boolean;
 
-  @Prop()
-  disciplina: Disciplina;
+  @Prop({ type: Types.ObjectId, ref: 'Disciplina' })
+  disciplina: Partial<Disciplina>;
 
-  @Prop()
-  aluno: User;
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  aluno: Partial<User>;
 
   constructor(init: Partial<Presenca>) {
     Object.assign(this, init);
   }
 }
-
 export const PresencaSchema = SchemaFactory.createForClass(Presenca);

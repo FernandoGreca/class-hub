@@ -15,7 +15,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://admim:admim@cluster0.qe1fc.mongodb.net/faculdade',
+      'mongodb+srv://admim:admim@cluster0.6rcxx.mongodb.net/projeto-faculdade',
     ),
     ConfigModule.forRoot(),
     UsersModule,
