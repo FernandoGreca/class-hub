@@ -51,4 +51,19 @@ export class AuthController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.authService.signOn(createUserDto);
   }
+
+  @Post('alterar-senha')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email' },
+        senha_nova: { type: 'string' },
+      },
+      required: ['email', 'senha_nova'],
+    },
+  })
+  alterarSenha(@Body() body: { email: string; senha_nova: string }) {
+    return this.authService.alterarSenha(body.email, body.senha_nova);
+  }
 }

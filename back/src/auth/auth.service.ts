@@ -16,10 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(
-    email: string,
-    senha: string,
-  ) {
+  async signIn(email: string, senha: string) {
     const usuario = await this.usersService.findByEmail(email);
 
     if (!usuario || usuario instanceof NotFoundException || !usuario.senha)
@@ -28,7 +25,7 @@ export class AuthService {
     const senha_correta = await compare(senha, usuario.senha);
     if (!senha_correta)
       return { message: 'Senha incorreta, tente novamente...' };
-    
+
     const payload = { sub: usuario._id, email: usuario.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -37,6 +34,10 @@ export class AuthService {
 
   async signOn(createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
+  }
+
+  async alterarSenha(email: string, senha: string) {
+    return await this.usersService.alterarSenha(email, senha);
   }
 }
 // const usuario = await this.userModel.findOne({ email }).exec();
