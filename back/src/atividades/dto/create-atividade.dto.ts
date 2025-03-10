@@ -1,6 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ObjectId } from "mongoose";
-import { Disciplina } from "src/disciplinas/entities/disciplina.entity";
 
 export class CreateAtividadeDto {
 
@@ -19,5 +17,5 @@ export class CreateAtividadeDto {
   data_entrega: Date;
 
   @ApiProperty()
-  disciplina: Disciplina;
+  disciplina: string;
 }

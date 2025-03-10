@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { DisciplinasService } from './disciplinas.service';
 import { CreateDisciplinaDto } from './dto/create-disciplina.dto';
 import { UpdateDisciplinaDto } from './dto/update-disciplina.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -12,6 +21,18 @@ export class DisciplinasController {
   constructor(private readonly disciplinasService: DisciplinasService) {}
 
   @Post()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        nome: { type: 'string' },
+        descricao: { type: 'string' },
+        carga_horaria: { type: 'number' },
+        codigo_disciplina: { type: 'string' },
+      },
+      required: ['nome', 'descricao', 'carga_horaria'],
+    },
+  })
   create(@Body() createDisciplinaDto: CreateDisciplinaDto) {
     return this.disciplinasService.create(createDisciplinaDto);
   }
@@ -27,8 +48,14 @@ export class DisciplinasController {
   }
 
   @Patch(':codigo_disciplina')
-  update(@Param('codigo_disciplina') codigo_disciplina: string, @Body() updateDisciplinaDto: UpdateDisciplinaDto) {
-    return this.disciplinasService.update(codigo_disciplina, updateDisciplinaDto);
+  update(
+    @Param('codigo_disciplina') codigo_disciplina: string,
+    @Body() updateDisciplinaDto: UpdateDisciplinaDto,
+  ) {
+    return this.disciplinasService.update(
+      codigo_disciplina,
+      updateDisciplinaDto,
+    );
   }
 
   @Delete(':codigo_disciplina')

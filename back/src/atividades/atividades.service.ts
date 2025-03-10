@@ -7,10 +7,9 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class AtividadesService {
-
   constructor(
-      @InjectModel(Atividade.name) private atividadeModel: Model<Atividade>,
-    ) {}
+    @InjectModel(Atividade.name) private atividadeModel: Model<Atividade>,
+  ) {}
 
   create(createAtividadeDto: CreateAtividadeDto) {
     const nova_atividade = new this.atividadeModel(createAtividadeDto);
@@ -23,14 +22,16 @@ export class AtividadesService {
   }
 
   async findOne(id: number) {
-    return await this.atividadeModel.findOne({ _id: id}).exec();
+    return await this.atividadeModel.findOne({ _id: id }).exec();
   }
 
   async update(id: number, updateAtividadeDto: UpdateAtividadeDto) {
-    return await this.atividadeModel.updateOne({ _id: id}, updateAtividadeDto).exec();
+    return await this.atividadeModel
+      .updateOne({ _id: id }, updateAtividadeDto)
+      .exec();
   }
 
   async remove(id: number) {
-    return await this.atividadeModel.deleteOne({ _id: id}).exec();
+    return await this.atividadeModel.deleteOne({ _id: id }).exec();
   }
 }

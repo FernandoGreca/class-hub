@@ -12,6 +12,15 @@ export class DisciplinasService {
   ) {}
 
   async create(createDisciplinaDto: CreateDisciplinaDto) {
+    if (
+      !createDisciplinaDto.codigo_disciplina ||
+      createDisciplinaDto.codigo_disciplina.length === 0
+    ) {
+      createDisciplinaDto.codigo_disciplina = this.gerarCodigoDisciplina();
+    } else if (createDisciplinaDto.codigo_disciplina.length < 6) {
+      throw new Error('Código de disciplina inválido. Deve no mínimo 6 caracteres.');
+    }
+
     const nova_disciplina = new this.disciplinaModel(createDisciplinaDto);
     const resultado = await nova_disciplina.save();
 
@@ -47,5 +56,15 @@ export class DisciplinasService {
     return await this.disciplinaModel.deleteOne({ codigo_disciplina }).exec();
   }
 
-  
+  // Métodos
+  gerarCodigoDisciplina() {
+    const caracteres =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let codigo = '';
+    for (let i = 0; i < 6; i++) {
+      const indice = Math.floor(Math.random() * caracteres.length);
+      codigo += caracteres.charAt(indice);
+    }
+    return codigo;
+  }
 }

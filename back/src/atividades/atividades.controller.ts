@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { AtividadesService } from './atividades.service';
 import { CreateAtividadeDto } from './dto/create-atividade.dto';
 import { UpdateAtividadeDto } from './dto/update-atividade.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -27,7 +36,10 @@ export class AtividadesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAtividadeDto: UpdateAtividadeDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAtividadeDto: UpdateAtividadeDto,
+  ) {
     return this.atividadesService.update(+id, updateAtividadeDto);
   }
 

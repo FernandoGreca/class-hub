@@ -21,10 +21,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // http://localhost:3000/users/criar-usuario
-  @Post('criar-usuario')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+  // @Post('criar-usuario')
+  // create(@Body() createUserDto: CreateUserDto) {
+  //   return this.usersService.create(createUserDto);
+  // }
 
   // @Post('login')
   // @ApiBody({
@@ -62,7 +62,7 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
-  @Post('adicionar-disciplina')
+  @Post('adicionar-usuario-disciplina')
   @ApiBody({
     schema: {
       type: 'object',
@@ -80,7 +80,7 @@ export class UsersController {
     return this.usersService.adicionarDisciplina(id_user, codigo_disciplina);
   }
 
-  @Post('remover-disciplina')
+  @Post('remover-usuario-disciplina')
   @ApiBody({
     schema: {
       type: 'object',
@@ -109,7 +109,7 @@ export class UsersController {
       required: ['email', 'senha_nova'],
     },
   })
-  alterarSenha(@Body() body: {email: string; senha_nova: string}) {
+  alterarSenha(@Body() body: { email: string; senha_nova: string }) {
     return this.usersService.alterarSenha(body.email, body.senha_nova);
   }
 }

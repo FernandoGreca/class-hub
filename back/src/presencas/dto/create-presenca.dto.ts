@@ -1,7 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ObjectId } from "mongoose";
-import { Disciplina } from "src/disciplinas/entities/disciplina.entity";
-import { User } from "src/users/entities/user.entity";
 
 export class CreatePresencaDto {
   _id: ObjectId;
@@ -13,8 +11,8 @@ export class CreatePresencaDto {
   presenca: boolean;
   
   @ApiProperty()
-  disciplina: Disciplina;
+  codigo_disciplina: string;
 
   @ApiProperty()
-  aluno: User;
+  id_aluno: string;
 }

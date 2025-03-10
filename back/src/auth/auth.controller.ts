@@ -11,6 +11,7 @@ import {
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @ApiBearerAuth()
 @Controller('auth')
@@ -29,13 +30,25 @@ export class AuthController {
       required: ['email', 'senha'],
     },
   })
-  signIn(@Body() body: {email: string, senha: string}) {
+  signIn(@Body() body: { email: string; senha: string }) {
     return this.authService.signIn(body.email, body.senha);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        nome: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        senha: { type: 'string' },
+        ano: { type: 'number' },
+        e_professor: { type: 'boolean' },
+      },
+      required: ['nome', 'email', 'senha', 'ano', 'e_professor'],
+    },
+  })
+  @Post('criar-usuario')
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signOn(createUserDto);
   }
 }

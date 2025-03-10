@@ -1,11 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
-import { User } from 'src/users/entities/user.entity';
 
 @Schema()
 export class Presenca {
-
   @Prop({ default: () => new Types.ObjectId() })
   _id: string;
 
@@ -15,11 +12,11 @@ export class Presenca {
   @Prop({ required: true })
   presenca: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: 'Disciplina' })
-  disciplina: Partial<Disciplina>;
+  @Prop({ required: true })
+  codigo_disciplina: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  aluno: Partial<User>;
+  @Prop({ required: true })
+  id_aluno: string;
 
   constructor(init: Partial<Presenca>) {
     Object.assign(this, init);

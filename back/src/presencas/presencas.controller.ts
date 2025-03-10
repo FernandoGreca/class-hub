@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { PresencasService } from './presencas.service';
 import { CreatePresencaDto } from './dto/create-presenca.dto';
 import { UpdatePresencaDto } from './dto/update-presenca.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiBearerAuth()
@@ -36,7 +36,7 @@ export class PresencasController {
     return this.presencasService.remove(id);
   }
 
-  @Get('presenca/:id_aluno')
+  @Get('lista-presenca/:id_aluno')
   findPresenca(@Param('id_aluno') id_aluno: string) {
     return this.presencasService.encontraListaPresenca(id_aluno);
   }

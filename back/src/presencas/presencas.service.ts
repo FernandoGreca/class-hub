@@ -26,25 +26,24 @@ export class PresencasService {
     if (createPresencaDto.data == undefined) {
       createPresencaDto.data = new Date();
     }
-  
-    const disciplina = await this.disciplinaService.findOne(createPresencaDto.disciplina.codigo_disciplina);
+
+    // Procura disciplina
+    const disciplina = await this.disciplinaService.findOne(
+      createPresencaDto.codigo_disciplina,
+    );
     if (disciplina instanceof NotFoundException || !disciplina) {
       return new NotFoundException('Disciplina não encontrada.');
     }
-    const { professores, alunos, atividades, descricao, carga_horaria, ...filtro_disciplina } = disciplina.toJSON();
-    createPresencaDto.disciplina = filtro_disciplina;
-  
-    const aluno = await this.userService.findOne(createPresencaDto.aluno._id);
+
+    // Procura aluno
+    const aluno = await this.userService.findOne(createPresencaDto.id_aluno);
     if (aluno instanceof NotFoundException || !aluno) {
       return new NotFoundException('Aluno não encontrado.');
     }
-    const { disciplinas, e_professor, senha, ...filtro_aluno } = aluno.toJSON();
-    createPresencaDto.aluno = filtro_aluno;
-  
-    const nova_presenca = new this.presencaModel(createPresencaDto);
-    const resultado = await nova_presenca.save();
-  
-    return new Presenca(resultado.toJSON());
+
+    await new this.presencaModel(createPresencaDto).save();
+
+    return { message: 'Presença registrada com sucesso!' };
   }
 
   async findAll() {
