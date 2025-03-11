@@ -41,7 +41,9 @@ export class PresencasService {
       return new NotFoundException('Aluno não encontrado.');
     }
 
-    await new this.presencaModel(createPresencaDto).save();
+    console.log(createPresencaDto);
+    const presenca = new this.presencaModel(createPresencaDto);
+    const resultado = await presenca.save();
 
     return { message: 'Presença registrada com sucesso!' };
   }
@@ -72,19 +74,45 @@ export class PresencasService {
     return await this.presencaModel.deleteOne({ _id: id }).exec();
   }
 
-  async encontraListaPresenca(id_aluno: string) {
-    const presencas = await this.presencaModel
+  async encontraListaPresencaAluno(
+    id_aluno: string,
+    codigo_disciplina: string,
+  ) {
+    const presencas_aluno = await this.presencaModel
       .find({
-        'aluno._id': id_aluno,
+        id_aluno,
       })
       .exec();
 
-    if (!presencas || presencas.length === 0) {
+    if (!presencas_aluno || presencas_aluno.length === 0) {
       throw new NotFoundException(
         'Nenhuma presença encontrada para este aluno.',
       );
     }
 
-    return presencas;
+    let lista_presenca_disciplina = Array<Presenca>();
+    presencas_aluno.forEach((presenca) => {
+      if (presenca.codigo_disciplina === codigo_disciplina) {
+        lista_presenca_disciplina.push(presenca);
+      }
+    });
+
+    return lista_presenca_disciplina;
+  }
+
+  async encontraListaPresencaDisciplina(codigo_disciplina: string) {
+    const presencas_disciplina = await this.presencaModel
+      .find({
+        codigo_disciplina,
+      })
+      .exec();
+
+    if (!presencas_disciplina || presencas_disciplina.length === 0) {
+      throw new NotFoundException(
+        'Nenhuma presença encontrada para este aluno.',
+      );
+    }
+
+    return presencas_disciplina;
   }
 }

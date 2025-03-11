@@ -12,7 +12,7 @@ export class Presenca {
   @Prop({ required: true })
   presenca: boolean;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: false })
   codigo_disciplina: string;
 
   @Prop({ required: true })
