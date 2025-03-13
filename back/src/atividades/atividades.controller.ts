@@ -9,10 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AtividadesService } from './atividades.service';
-import { CreateAtividadeDto } from './dto/create-atividade.dto';
+import { CreateAtividadeDto, CreateNotaAlunoAtividadeDto } from './dto/create-atividade.dto';
 import { UpdateAtividadeDto } from './dto/update-atividade.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -32,7 +32,7 @@ export class AtividadesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.atividadesService.findOne(+id);
+    return this.atividadesService.findOne(id);
   }
 
   @Patch(':id')
@@ -40,11 +40,16 @@ export class AtividadesController {
     @Param('id') id: string,
     @Body() updateAtividadeDto: UpdateAtividadeDto,
   ) {
-    return this.atividadesService.update(+id, updateAtividadeDto);
+    return this.atividadesService.update(id, updateAtividadeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.atividadesService.remove(+id);
+    return this.atividadesService.remove(id);
+  }
+
+  @Post('inserir-nota-aluno-atividade')
+  notaAlunoAtividade(@Body() notaAlunoAtividade: CreateNotaAlunoAtividadeDto) {
+    return this.atividadesService.notaAlunoAtividade(notaAlunoAtividade);
   }
 }

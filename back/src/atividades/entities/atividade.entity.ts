@@ -1,11 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Types } from 'mongoose';
-import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
+import { Types } from 'mongoose';
+
+export class NotaAluno {
+  @Prop({ required: true })
+  id_aluno: string;
+  @Prop({ required: true })
+  nome_aluno: string;
+  @Prop({ required: true })
+  nota: number;
+}
 
 @Schema()
 export class Atividade {
   @Prop({ default: () => new Types.ObjectId() })
-    _id: string;
+  _id: string;
 
   @Prop({ required: true })
   nome: string;
@@ -19,8 +27,11 @@ export class Atividade {
   @Prop()
   data_entrega: Date;
 
+  @Prop({ required: true })
+  disciplina: string;
+
   @Prop()
-  disciplina: Disciplina;
+  nota_alunos: Array<NotaAluno>;
 
   constructor(init: Partial<Atividade>) {
     Object.assign(this, init);
