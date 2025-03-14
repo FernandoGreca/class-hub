@@ -47,9 +47,9 @@ export class AuthController {
       required: ['nome', 'email', 'senha', 'ano', 'e_professor'],
     },
   })
-  @Post('criar-usuario')
+  @Post('cadastro-usuario')
   create(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signOn(createUserDto);
+    return this.authService.signUp(createUserDto);
   }
 
   @Post('alterar-senha')

@@ -32,7 +32,7 @@ export class AuthService {
     };
   }
 
-  async signOn(createUserDto: CreateUserDto) {
+  async signUp(createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
   }
 
