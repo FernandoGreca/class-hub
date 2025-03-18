@@ -23,14 +23,21 @@ export class AtividadesService {
 
     if (await !this.existeDisciplina(createAtividadeDto.disciplina)) {
       return {
-        message: 'Disciplina não encontrada',
+        mensagem: 'Disciplina não encontrada',
       };
     }
 
     if (dataEntrega.getDay() < new Date().getDay()) {
       return {
-        message: 'Data de entrega não pode ser menor que a data atual',
+        mensagem: 'Data de entrega não pode ser menor que a data atual',
       };
+    }
+
+    if (createAtividadeDto.nota != 100) {
+      return {
+        mensagem: 'Nota da atividade deve ser igual a 100',
+        explicacao: 'É essencial que a nota da atividade seja 100, pois o cálculo da média considera a soma de todas as notas do aluno em uma atividade, dividida pela quantidade total de atividades da disciplina.',
+      }
     }
 
     const nova_atividade = new this.atividadeModel(createAtividadeDto);
@@ -44,7 +51,7 @@ export class AtividadesService {
     await this.disciplinaService.update(disciplina.codigo_disciplina, disciplina);
 
     return {
-      message: 'Atividade criada com sucesso!',
+      mensagem: 'Atividade criada com sucesso!',
     };
   }
 
@@ -71,13 +78,13 @@ export class AtividadesService {
 
     if (!atividade) {
       return {
-        message: 'Atividade não encontrada',
+        mensagem: 'Atividade não encontrada',
       };
     }
 
     if (notaAlunoAtividade.nota > atividade.nota) {
       return {
-        message: 'Nota não pode ser maior que a nota da atividade',
+        mensagem: 'Nota não pode ser maior que a nota da atividade',
       };
     }
 
@@ -117,7 +124,7 @@ export class AtividadesService {
     await this.disciplinaService.update(disciplina.codigo_disciplina, disciplina);
 
     return {
-      message: alunoJaTemNota
+      mensagem: alunoJaTemNota
         ? 'Nota do aluno atualizada com sucesso!'
         : 'Nota do aluno inserida com sucesso!',
     };
