@@ -37,6 +37,12 @@ export class AtividadesService {
 
     await nova_atividade.save();
 
+    const disciplina = await this.disciplinaService.findOne(createAtividadeDto.disciplina);
+
+    disciplina.atividades.push(nova_atividade);
+
+    await this.disciplinaService.update(disciplina.codigo_disciplina, disciplina);
+
     return {
       message: 'Atividade criada com sucesso!',
     };
@@ -84,12 +90,12 @@ export class AtividadesService {
       }
     });
 
-    if (!alunoJaTemNota) {
-      const cod_disciplina = atividade.disciplina;
+    const cod_disciplina = atividade.disciplina;
 
-      const disciplina: Disciplina =
+    const disciplina: Disciplina =
         await this.disciplinaService.findOne(cod_disciplina);
 
+    if (!alunoJaTemNota) {
       disciplina.alunos.forEach((aluno) => {
         if (aluno._id == notaAlunoAtividade.id_aluno) {
           atividade.nota_alunos.push({
@@ -105,6 +111,10 @@ export class AtividadesService {
       { _id: notaAlunoAtividade.id_atividade },
       { $set: { nota_alunos: atividade.nota_alunos } },
     );
+
+    disciplina.atividades.push(atividade);
+
+    await this.disciplinaService.update(disciplina.codigo_disciplina, disciplina);
 
     return {
       message: alunoJaTemNota

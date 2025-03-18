@@ -62,4 +62,10 @@ export class DisciplinasController {
   remove(@Param('codigo_disciplina') codigo_disciplina: string) {
     return this.disciplinasService.remove(codigo_disciplina);
   }
+
+  @Get('media-nota-aluno/:codigo_disciplina/:id_aluno')
+  mediaAluno(@Param('id_aluno') id_aluno: string, @Param('codigo_disciplina') codigo_disciplina: string) {
+    return this.disciplinasService.mediaAluno(id_aluno, codigo_disciplina);
+  }
+
 }

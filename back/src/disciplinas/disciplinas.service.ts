@@ -4,6 +4,7 @@ import { UpdateDisciplinaDto } from './dto/update-disciplina.dto';
 import { Disciplina } from './entities/disciplina.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { exit } from 'process';
 
 @Injectable()
 export class DisciplinasService {
@@ -54,6 +55,45 @@ export class DisciplinasService {
 
   async remove(codigo_disciplina: string) {
     return await this.disciplinaModel.deleteOne({ codigo_disciplina }).exec();
+  }
+
+  async mediaAluno(id_aluno: string, codigo_disciplina: string) {
+    const result = await this.findOne(codigo_disciplina);
+
+    // Verifica se o resultado é uma exceção
+    if (result instanceof NotFoundException) {
+        throw new Error("Disciplina não encontrada");
+    }
+
+    // Agora, TypeScript sabe que `result` é do tipo `Disciplina`
+    const disciplina: Disciplina = result;
+
+    // Verifica se o aluno está matriculado na disciplina
+    const estaMatriculado = disciplina.alunos.some(aluno => aluno._id === id_aluno);
+    if (!estaMatriculado) {
+        throw new Error("Aluno não matriculado na disciplina");
+    }
+
+    // Calcula a média do aluno na disciplina
+    let nota_soma = 0;
+    let atividade_qtd = 0;
+
+    disciplina.atividades.forEach((atividade) => {
+        atividade.nota_alunos.forEach((nota_aluno) => {
+            if (nota_aluno.id_aluno === id_aluno) {
+                nota_soma += nota_aluno.nota;
+                atividade_qtd++;
+            }
+        });
+    });
+
+    // Evita divisão por zero
+    if (atividade_qtd === 0) {
+        throw new Error("Nenhuma atividade encontrada para o aluno");
+    }
+
+    const media = nota_soma / atividade_qtd;
+    return media;
   }
 
   // Métodos
