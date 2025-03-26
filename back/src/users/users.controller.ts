@@ -20,28 +20,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // http://localhost:3000/users/criar-usuario
-  // @Post('criar-usuario')
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
-
-  // @Post('login')
-  // @ApiBody({
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       email: { type: 'string' },
-  //       senha: { type: 'string' },
-  //     },
-  //     required: ['email', 'senha'],
-  //   },
-  // })
-  // login(@Body() body: { email: string; senha: string }) {
-  //   return this.usersService.login(body.email, body.senha);
-  // }
-
-  // http://localhost:3000/users
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -98,11 +76,3 @@ export class UsersController {
     return this.usersService.removerDisciplina(id_user, codigo_disciplina);
   }
 }
-
-
-
-// POST - criação
-// PUT - edição ou criação
-// PATCH - edição
-// GET - pegar
-// DELETE - apaga
