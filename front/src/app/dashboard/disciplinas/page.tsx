@@ -24,7 +24,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-5">
+      <div className="flex flex-wrap gap-8">
         <Card nomeDisciplina={"Matemática"} fotoPerfil={undefined} nomeProfessor={"Bruna Sozzo"} buttonBgColor="purple" buttonBgColorHover="purple" />
         <Card nomeDisciplina={"Física"} fotoPerfil={undefined} nomeProfessor={"Mario Akihita"}  />
         <Card nomeDisciplina={"Sociologia"} fotoPerfil={undefined} nomeProfessor={"Wilson Sanches"} buttonBgColor="blue" buttonBgColorHover="blue" />
