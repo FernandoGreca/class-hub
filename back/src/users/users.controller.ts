@@ -30,7 +30,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Get('find-by-email/:email')
+  @Get('encontrar-por-email/:email')
   findByEmail(@Param('email') email: string) {
     return this.usersService.findByEmailFiltrado(email);
   }
