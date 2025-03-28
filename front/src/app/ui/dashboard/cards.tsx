@@ -36,6 +36,7 @@ interface CardProps {
 export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, buttonBgColor = "gray", buttonBgColorHover = "gray" }: CardProps) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,22 +55,29 @@ export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, button
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
       <div
-        className={`w-72 bg-white rounded-lg shadow-md border transition-transform transform-gpu ${isMobile ? "cursor-pointer" : ""}`}
+        className={`w-72 h-50 bg-white rounded-lg shadow-md border transition-transform transform-gpu flex flex-col justify-between ${isMobile ? "cursor-pointer" : ""}`}
         onClick={isMobile ? irParaAtividades : undefined}
       >
         <button
-          className={` w-full cursor-pointer rounded-t-lg text-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
-          onClick={isMobile ? (e) => e.stopPropagation() : irParaAtividades}
+          className={`w-full cursor-pointer rounded-t-lg text-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
+          onClick={irParaAtividades}
         >
           <div className="flex justify-center text-white p-4 rounded-t-lg relative">
             <h2 className="text-lg font-semibold truncate max-w-[calc(100%-4.5rem)]">{nomeDisciplina}</h2>
           </div>
         </button>
 
-        <div className="relative p-4">
+        <div className="relative p-4 flex-grow">
           <img src={fotoPerfil || "/fotoPerfil.jpeg"} alt="Foto Perfil" className="w-16 h-14 rounded-full absolute -top-7 right-3 shadow" />
           <p className="text-gray-700 font-bold mt-4">{nomeProfessor}</p>
         </div>
+
+
+        {/* <div className="relative p-4 h-16 flex items-center"> */}
+          {/* <p className="text-gray-700 text-sm font-bold truncate overflow-hidden whitespace-nowrap w-full">
+            Postagem Recente: <span className="text-blue-600">{ultimaAtividadePostada}</span>
+          </p> */}
+        {/* </div> */}
 
         <div className="absolute top-2 left-2 z-[9999]">
           <Dropdown nomeDisciplina={nomeDisciplina} />

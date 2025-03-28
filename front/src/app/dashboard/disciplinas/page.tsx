@@ -25,7 +25,10 @@ export default function Dashboard() {
   return (
     <>
       <div className="flex flex-wrap gap-8">
-        <Card nomeDisciplina={"Matemática"} fotoPerfil={undefined} nomeProfessor={"Bruna Sozzo"} buttonBgColor="purple" buttonBgColorHover="purple" />
+      {/* {disciplinas.length > 0 ? (
+                    disciplinas.map((disciplina) => (<Card nomeDisciplina={disciplina.nome} fotoPerfil={undefined} nomeProfessor={disciplina.professores[0]} buttonBgColor="purple" buttonBgColorHover="purple" />)} */}
+        
+        <Card nomeDisciplina={"aux-039"} fotoPerfil={undefined} nomeProfessor={"Bruna Sozzo"} buttonBgColor="purple" buttonBgColorHover="purple"  />
         <Card nomeDisciplina={"Física"} fotoPerfil={undefined} nomeProfessor={"Mario Akihita"}  />
         <Card nomeDisciplina={"Sociologia"} fotoPerfil={undefined} nomeProfessor={"Wilson Sanches"} buttonBgColor="blue" buttonBgColorHover="blue" />
         <Card nomeDisciplina={"Ciências"} fotoPerfil={undefined} nomeProfessor={"Luiz Nunes"} buttonBgColor="green" buttonBgColorHover="green" />
