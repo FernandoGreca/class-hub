@@ -14,8 +14,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
-@ApiBearerAuth()
-@UseGuards(AuthGuard)
+//@ApiBearerAuth()
+// @UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -28,6 +28,11 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+
+  @Get('find-by-email/:email')
+  findByEmail(@Param('email') email: string) {
+    return this.usersService.findByEmailFiltrado(email);
   }
 
   @Patch(':id')

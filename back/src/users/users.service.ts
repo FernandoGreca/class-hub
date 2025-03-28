@@ -42,6 +42,18 @@ export class UsersService {
     return procurar_usuario;
   }
 
+  async findByEmailFiltrado(email: string) {
+    let procurar_usuario = await this.userModel.findOne({ email }).exec();
+
+    if (!procurar_usuario) {
+      return new NotFoundException('Usuário não encontrado.');
+    }
+
+    const { senha, ...usuarioFiltrado } = procurar_usuario.toJSON();
+
+    return usuarioFiltrado;
+  }
+
   async findOne(id: string) {
     let procurar_usuario = await this.userModel.findOne({ _id: id }).exec();
 
