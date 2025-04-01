@@ -2,7 +2,7 @@
 
 import AtividadesPendentes from "@/app/ui/dashboard/atividades-pendentes";
 
-export default function DashboardAluno() {
+export default function DashboardProfessor() {
   const atividades = [
     { disciplina: "aux-039", descricao: "Trabalho de Matemática", data_entrega: "2025-03-25", nota: 10, nota_aluno: null },
     { disciplina: "aux-039", descricao: "Redação", data_entrega: "2025-03-30", nota: 10, nota_aluno: 8 },
