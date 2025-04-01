@@ -5,16 +5,23 @@ import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid'; // Importand
 
 interface DropdownProps {
   nomeDisciplina: string;
+  userType: 'professor' | 'aluno'; // Supondo que você tenha o tipo de usuário como 'professor' ou 'aluno'
 }
 
-export default function Dropdown({ nomeDisciplina }: DropdownProps) {
+export default function Dropdown({ nomeDisciplina, userType }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const irParaAtividades = (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(`/dashboard/disciplinas/atividades?disciplina=${encodeURIComponent(nomeDisciplina)}`);
+    
+    // Verificando o tipo de usuário e criando a URL dinâmica
+    const baseURL = userType === 'professor'
+      ? '/dashboard-professor/disciplinas/atividades'
+      : '/dashboard-aluno/disciplinas/atividades';
+
+    router.push(`${baseURL}?disciplina=${encodeURIComponent(nomeDisciplina)}`);
     setOpen(false);
   };
 

@@ -31,14 +31,24 @@ interface CardProps {
   nomeProfessor: string;
   buttonBgColor?: string;
   buttonBgColorHover?: string;
+  onClick?: () => void;
 }
 
-export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, buttonBgColor = "gray", buttonBgColorHover = "gray" }: CardProps) {
+export default function Card({
+  nomeDisciplina,
+  fotoPerfil,
+  nomeProfessor,
+  buttonBgColor = "gray",
+  buttonBgColorHover = "gray",
+  onClick, // Adicionando o onClick
+}: CardProps) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
+    setRole(sessionStorage.getItem("role") ?? null);
+
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -48,21 +58,15 @@ export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, button
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const irParaAtividades = () => {
-    router.push(`/dashboard-aluno/disciplinas/atividades?disciplina=${encodeURIComponent(nomeDisciplina)}`);
-  };
-
-  const user = sessionStorage.getItem("User")
-
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
       <div
         className={`w-72 h-50 bg-white rounded-lg shadow-md border transition-transform transform-gpu flex flex-col justify-between ${isMobile ? "cursor-pointer" : ""}`}
-        onClick={isMobile ? irParaAtividades : undefined}
+        onClick={isMobile ? onClick : undefined}
       >
         <button
           className={`w-full cursor-pointer rounded-t-lg text-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
-          onClick={irParaAtividades}
+          onClick={onClick}
         >
           <div className="flex justify-center text-white p-4 rounded-t-lg relative">
             <h2 className="text-lg font-semibold truncate max-w-[calc(100%-4.5rem)]">{nomeDisciplina}</h2>
@@ -74,11 +78,13 @@ export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, button
           <p className="text-gray-700 font-bold mt-4">{nomeProfessor}</p>
         </div>
 
-        {/* <div className="relative p-4 h-16 flex items-center"> */}
-          {/* <p className="text-gray-700 text-sm font-bold truncate overflow-hidden whitespace-nowrap w-full">
-            Postagem Recente: <span className="text-blue-600">{ultimaAtividadePostada}</span>
-          </p> */}
-        {/* </div> */}
+        {role === "professor" && (
+          <div className="p-4 flex justify-center">
+            <button onClick={onClick} className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+              Ver Atividades
+            </button>
+          </div>
+        )}
 
         <div className="absolute top-2 left-2 z-[9999]">
           <Dropdown nomeDisciplina={nomeDisciplina} />

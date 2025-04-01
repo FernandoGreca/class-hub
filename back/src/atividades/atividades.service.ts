@@ -21,7 +21,7 @@ export class AtividadesService {
     // Convertendo data_entrega para um objeto Date
     const dataEntrega = new Date(createAtividadeDto.data_entrega);
 
-    if (await !this.existeDisciplina(createAtividadeDto.disciplina)) {
+    if (!(await this.existeDisciplina(createAtividadeDto.disciplina))) {
       return {
         mensagem: 'Disciplina não encontrada',
       };

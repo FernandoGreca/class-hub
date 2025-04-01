@@ -13,7 +13,7 @@ export default function DashboardProfessor() {
     <div className="flex h-screen bg-gray-100">
       <div className="flex-1 p-6">
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md">
-          <h1 className="text-2xl font-semibold">Bem vindo, Aluno</h1>
+          <h1 className="text-2xl font-semibold">Bem vindo, Professor</h1>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-6">
