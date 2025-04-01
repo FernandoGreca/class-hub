@@ -5,40 +5,35 @@ import {
   DocumentDuplicateIcon,
   UsersIcon,
   CheckCircleIcon,
+  ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-
-// Map of links to display in the side navigation.
-// Depending on the size of the application, this would be stored in a database.
-const links = [
-  { name: 'Home', 
-    href: '/dashboard-aluno', 
-    icon: HomeIcon 
-  },
-
-  {
-    name: 'Disciplinas',
-    href: '/dashboard-aluno/disciplinas',
-    icon: DocumentDuplicateIcon
-  },
-
-  { name: 'Atividades', 
-    href: '/dashboard-aluno/disciplinas/atividades', 
-    icon: CheckCircleIcon
-  },
-
-  {
-    name:'Pessoas',
-    href: '/dashboard-aluno/disciplinas/pessoas',
-    icon: UsersIcon
-  }
-
-];
 
 export default function NavLinks() {
   const pathname = usePathname();
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedRole = sessionStorage.getItem("role");
+    setRole(storedRole);
+  }, []);
+
+  // Definição dinâmica dos links baseados na role
+  const links = role === "professor" ? [
+    { name: 'Home', href: '/dashboard-professor', icon: HomeIcon },
+    { name: 'Minhas Disciplinas', href: '/dashboard-professor/disciplinas', icon: DocumentDuplicateIcon },
+    { name: 'Atividades', href: '/dashboard-professor/disciplinas/atividades', icon: ClipboardDocumentListIcon },
+    { name: 'Pessoas', href: '/dashboard-professor/disciplinas/pessoas', icon: UsersIcon }
+  ] : [
+    { name: 'Home', href: '/dashboard-aluno', icon: HomeIcon },
+    { name: 'Disciplinas', href: '/dashboard-aluno/disciplinas', icon: DocumentDuplicateIcon },
+    { name: 'Atividades', href: '/dashboard-aluno/disciplinas/atividades', icon: CheckCircleIcon },
+    { name: 'Pessoas', href: '/dashboard-aluno/disciplinas/pessoas', icon: UsersIcon }
+  ];
+
   return (
     <>
       {links.map((link) => {
@@ -50,9 +45,8 @@ export default function NavLinks() {
             className={clsx(
               "flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3",
               {
-                'bg-sky-100 text-blue-600' : pathname === link.href,
-                // 'bg-red-100 text-gray-500' : pathname !== link.href,
-              },
+                'bg-sky-100 text-blue-600': pathname === link.href,
+              }
             )}
           >
             <LinkIcon className="w-6" />
