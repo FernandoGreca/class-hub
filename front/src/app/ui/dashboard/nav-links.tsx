@@ -14,24 +14,24 @@ import clsx from 'clsx';
 // Depending on the size of the application, this would be stored in a database.
 const links = [
   { name: 'Home', 
-    href: '/dashboard', 
+    href: '/dashboard-aluno', 
     icon: HomeIcon 
   },
 
   {
     name: 'Disciplinas',
-    href: '/dashboard/disciplinas',
+    href: '/dashboard-aluno/disciplinas',
     icon: DocumentDuplicateIcon
   },
 
   { name: 'Atividades', 
-    href: '/dashboard/disciplinas/atividades', 
+    href: '/dashboard-aluno/disciplinas/atividades', 
     icon: CheckCircleIcon
   },
 
   {
     name:'Pessoas',
-    href: '/dashboard/disciplinas/pessoas',
+    href: '/dashboard-aluno/disciplinas/pessoas',
     icon: UsersIcon
   }
 

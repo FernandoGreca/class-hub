@@ -23,11 +23,17 @@ export default function LoginPage() {
       const token = response.data.access_token;
       console.log("Token recebido:", token);
 
-      // Salva token e email no localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("email", email);
+      // Salva token e email no sessionStorage
+      sessionStorage.setItem("token", token);
 
-      router.push("/dashboard"); // Redireciona para o dashboard após login
+      const responseUser = await axios.get(
+        `http://localhost:3000/users/encontrar-por-email/${email}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      sessionStorage.setItem("User", JSON.stringify(responseUser.data));
+
+      router.push("/dashboard-aluno");
     } catch (err: any) {
       setError("Credenciais inválidas. Tente novamente.");
     }
@@ -68,6 +74,7 @@ export default function LoginPage() {
             Entrar
           </button>
         </form>
+        {/* {user.e_professor == true && <h1>User é professor</h1>} */}
       </div>
     </div>
   );

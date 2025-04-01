@@ -49,8 +49,10 @@ export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, button
   }, []);
 
   const irParaAtividades = () => {
-    router.push(`/dashboard/disciplinas/atividades?disciplina=${encodeURIComponent(nomeDisciplina)}`);
+    router.push(`/dashboard-aluno/disciplinas/atividades?disciplina=${encodeURIComponent(nomeDisciplina)}`);
   };
+
+  const user = sessionStorage.getItem("User")
 
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
@@ -71,7 +73,6 @@ export default function Card({ nomeDisciplina, fotoPerfil, nomeProfessor, button
           <img src={fotoPerfil || "/fotoPerfil.jpeg"} alt="Foto Perfil" className="w-16 h-14 rounded-full absolute -top-7 right-3 shadow" />
           <p className="text-gray-700 font-bold mt-4">{nomeProfessor}</p>
         </div>
-
 
         {/* <div className="relative p-4 h-16 flex items-center"> */}
           {/* <p className="text-gray-700 text-sm font-bold truncate overflow-hidden whitespace-nowrap w-full">
