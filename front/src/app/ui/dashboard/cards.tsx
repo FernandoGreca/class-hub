@@ -32,7 +32,7 @@ interface CardProps {
   buttonBgColor?: string;
   buttonBgColorHover?: string;
   onClick?: () => void;
-  
+
 }
 
 export default function Card({
@@ -62,32 +62,32 @@ export default function Card({
   const irParaAtividades = () => {
     const storedRole = sessionStorage.getItem("role");
     if (!storedRole) return;
-  
+
     const basePath =
       storedRole === "professor"
         ? "/dashboard-professor/disciplinas/atividades"
         : "/dashboard-aluno/disciplinas/atividades";
-  
+
     router.push(`${basePath}?disciplina=${encodeURIComponent(nomeDisciplina)}`);
   };
-  
- 
+
+
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
       <div
         className={`w-72 h-50 bg-white rounded-lg shadow-md border transition-transform transform-gpu flex flex-col justify-between ${isMobile ? "cursor-pointer" : ""}`}
         onClick={isMobile ? onClick : undefined}
       >
-       <button
-  className={`w-full cursor-pointer rounded-t-lg text-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
-  onClick={irParaAtividades} // Chama a função de navegação
->
-  <div className="flex justify-center text-white p-4 rounded-t-lg relative">
-    <h2 className="text-lg font-semibold truncate max-w-[calc(100%-4.5rem)]">
-      {nomeDisciplina}
-    </h2>
-  </div>
-</button>
+        <button
+          className={`w-full cursor-pointer rounded-t-lg text-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
+          onClick={irParaAtividades} // Chama a função de navegação
+        >
+          <div className="flex justify-center text-white p-4 rounded-t-lg relative">
+            <h2 className="text-lg font-semibold truncate max-w-[calc(100%-4.5rem)]">
+              {nomeDisciplina}
+            </h2>
+          </div>
+        </button>
 
         <div className="relative p-4 flex-grow">
           <img src={fotoPerfil || "/fotoPerfil.jpeg"} alt="Foto Perfil" className="w-16 h-14 rounded-full absolute -top-7 right-3 shadow" />

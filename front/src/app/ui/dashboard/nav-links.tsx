@@ -6,6 +6,7 @@ import {
   UsersIcon,
   CheckCircleIcon,
   ClipboardDocumentListIcon,
+  AcademicCapIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -26,6 +27,7 @@ export default function NavLinks() {
     { name: 'Home', href: '/dashboard-professor', icon: HomeIcon },
     { name: 'Minhas Disciplinas', href: '/dashboard-professor/disciplinas', icon: DocumentDuplicateIcon },
     { name: 'Atividades', href: '/dashboard-professor/disciplinas/atividades', icon: ClipboardDocumentListIcon },
+    { name: 'Lançar Notas', href: '/dashboard-professor/disciplinas/atividades/inserir-nota-aluno-atividade', icon: AcademicCapIcon },
     { name: 'Pessoas', href: '/dashboard-professor/disciplinas/pessoas', icon: UsersIcon }
   ] : [
     { name: 'Home', href: '/dashboard-aluno', icon: HomeIcon },
