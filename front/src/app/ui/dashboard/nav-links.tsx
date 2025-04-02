@@ -7,13 +7,14 @@ import {
   CheckCircleIcon,
   ClipboardDocumentListIcon,
   AcademicCapIcon,
+  ArrowRightStartOnRectangleIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 
-export default function NavLinks() {
+export default function NavLinks({ isMobile }: { isMobile: boolean }) {
   const pathname = usePathname();
   const [role, setRole] = useState<string | null>(null);
 
@@ -28,6 +29,7 @@ export default function NavLinks() {
     { name: 'Minhas Disciplinas', href: '/dashboard-professor/disciplinas', icon: DocumentDuplicateIcon },
     { name: 'Atividades', href: '/dashboard-professor/disciplinas/atividades', icon: ClipboardDocumentListIcon },
     { name: 'Lançar Notas', href: '/dashboard-professor/disciplinas/atividades/inserir-nota-aluno-atividade', icon: AcademicCapIcon },
+    { name: 'Fazer Chamada', href: '/dashboard-professor/disciplinas/presenca', icon: ArrowRightStartOnRectangleIcon },
     { name: 'Pessoas', href: '/dashboard-professor/disciplinas/pessoas', icon: UsersIcon }
   ] : [
     { name: 'Home', href: '/dashboard-aluno', icon: HomeIcon },
@@ -52,7 +54,7 @@ export default function NavLinks() {
             )}
           >
             <LinkIcon className="w-6" />
-            <p className="hidden md:block">{link.name}</p>
+            <p className={isMobile ? "block" : "hidden md:block"}>{link.name}</p>
           </Link>
         );
       })}

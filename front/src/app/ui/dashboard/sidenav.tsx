@@ -1,15 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavLinks from '@/app/ui/dashboard/nav-links';
-import { PowerIcon } from '@heroicons/react/24/outline';
+import { PowerIcon, Bars4Icon } from '@heroicons/react/24/outline';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 export default function SideNav() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 420);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -23,7 +34,7 @@ export default function SideNav() {
       <div className="flex h-full flex-col px-3 py-4 md:px-2">
         <Link
           className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4 md:h-40"
-          href="/"
+          href="#"
         >
           <div className="w-32 text-white md:w-40">
             <Image 
@@ -35,19 +46,40 @@ export default function SideNav() {
             />
           </div>
         </Link>
-        <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-          <NavLinks />
-          <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
-
-          {/* Botão de Logout */}
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-red-100 hover:text-red-600 md:flex-none md:justify-start md:p-2 md:px-3"
-          >
-            <PowerIcon className="w-6" />
-            <div className="hidden md:block">Sair</div>
-          </button>
-        </div>
+        
+        {isMobile ? (
+          <>
+            <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-gray-600">
+              <Bars4Icon className="w-8 h-8" />
+            </button>
+            {isOpen && (
+              <div className="flex flex-col space-y-2 mt-2">
+                <NavLinks isMobile={true} />
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="flex h-[48px] w-full items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-red-100 hover:text-red-600"
+                >
+                  <PowerIcon className="w-6" />
+                  <span>Sair</span>
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+            <NavLinks isMobile={false} />
+            <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
+            
+            {/* Botão de Logout */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-red-100 hover:text-red-600 md:flex-none md:justify-start md:p-2 md:px-3"
+            >
+              <PowerIcon className="w-6" />
+              <div className="hidden md:block">Sair</div>
+            </button>
+          </div>
+        )}
       </div>
 
       {showModal && (

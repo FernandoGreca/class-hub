@@ -65,7 +65,7 @@ export default function LancamentoNotas() {
           />
           <button
             onClick={handleSubmit}
-            className="cursor-pointer w-30 flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+            className="cursor-pointer flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
           >
             <PlusIcon className="w-6 h-6 text-white mr-1" />
             Salvar
