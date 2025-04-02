@@ -1,6 +1,6 @@
 'use client';
 import { useState } from "react";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { ArrowRightCircleIcon } from "@heroicons/react/24/solid";
 
 export default function LancamentoNotas() {
   const [notas, setNotas] = useState([
@@ -47,13 +47,13 @@ export default function LancamentoNotas() {
         onChange={(e) => setBusca(e.target.value)}
         className="border rounded p-2 w-full mb-4"
       />
-      <div className="grid grid-cols-4 gap-4 items-center font-medium mb-2">
+      <div className="grid grid-cols-3 gap-4 items-center font-medium mb-2">
         <span>Aluno</span>
         <span>Nota</span>
         <span>Ação</span>
       </div>
       {alunosFiltrados.map((aluno) => (
-        <div key={aluno.id_aluno} className="grid grid-cols-4 gap-4 items-center mb-2">
+        <div key={aluno.id_aluno} className="grid grid-cols-3 gap-4 items-center mb-2">
           <span>{aluno.nome_aluno}</span>
           <input
             type="number"
@@ -65,10 +65,10 @@ export default function LancamentoNotas() {
           />
           <button
             onClick={handleSubmit}
-            className="cursor-pointer flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+            className="cursor-pointer flex justify-center items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
           >
-            <PlusIcon className="w-6 h-6 text-white mr-1" />
-            Salvar
+            <ArrowRightCircleIcon className="w-6 h-6 text-white mr-1" />
+            Lançar
           </button>
         </div>
       ))}
