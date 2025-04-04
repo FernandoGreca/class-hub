@@ -107,7 +107,7 @@ export default function LancamentoNotas() {
         <select
           value={disciplinaSelecionada}
           onChange={(e) => handleDisciplinaChange(e.target.value)}
-          className="border rounded p-2 w-full text-sm"
+          className="border rounded p-2 w-full "
         >
           <option value="" disabled>Selecione a disciplina</option>
           {disciplinas.map((disciplina) => (
@@ -120,7 +120,7 @@ export default function LancamentoNotas() {
         <select
           value={atividadeSelecionada}
           onChange={(e) => handleAtividadeChange(e.target.value)}
-          className="border rounded p-2 w-full text-sm"
+          className="border rounded p-2 w-full "
           disabled={!disciplinaSelecionada}
         >
           <option value="" disabled>Selecione a atividade</option>
@@ -139,7 +139,7 @@ export default function LancamentoNotas() {
         placeholder="Buscar aluno..."
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
-        className="border rounded p-2 w-full mb-4 text-sm"
+        className="border rounded p-2 w-full mb-4 "
         disabled={!atividadeSelecionada}
       />
 
@@ -158,12 +158,12 @@ export default function LancamentoNotas() {
             max="100"
             value={aluno.nota}
             onChange={(e) => handleNotaChange(aluno.id_aluno, e.target.value)}
-            className="border rounded p-2 w-full text-sm"
+            className="border rounded p-2 w-full "
             disabled={notasLançadas.includes(aluno.id_aluno)}
           />
           <button
             onClick={() => handleSubmit(aluno.id_aluno)}
-            className={`flex justify-center items-center py-2 px-4 rounded-lg text-sm ${
+            className={`flex justify-center items-center py-2 px-4 rounded-lg  ${
               notasLançadas.includes(aluno.id_aluno)
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -178,7 +178,7 @@ export default function LancamentoNotas() {
 
       <button
         onClick={handleSubmitAll}
-        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 text-sm"
+        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 "
         disabled={notas.every((n) => notasLançadas.includes(n.id_aluno))}
       >
         <CheckCircleIcon className="w-5 h-5 mr-2" />
@@ -194,20 +194,20 @@ export default function LancamentoNotas() {
                 ? "Deseja lançar todas as notas preenchidas?"
                 : "Deseja lançar a nota deste aluno?"}
             </h2>
-            <p className="text-gray-600 text-sm mt-2">
+            <p className="text-gray-600  mt-2">
               Disciplina: {disciplinas.find(d => d.id === disciplinaSelecionada)?.nome}<br />
               Atividade: {atividades.find(a => a.id === atividadeSelecionada)?.nome}
             </p>
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm"
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition "
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmacaoModal}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition "
               >
                 Confirmar
               </button>

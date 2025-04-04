@@ -18,9 +18,7 @@ export default function RegistroPresenca() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Simulação de API para buscar disciplinas do professor
     const fetchDisciplinas = async () => {
-      // Aqui você pode substituir por uma chamada real à API
       const disciplinasMock = [
         { id: "MAT101", nome: "Matemática" },
         { id: "FIS102", nome: "Física" },
@@ -34,7 +32,6 @@ export default function RegistroPresenca() {
   }, []);
 
   useEffect(() => {
-    // Simulação de API para buscar alunos de uma disciplina
     if (disciplinaSelecionada) {
       const fetchAlunos = async () => {
         const alunosMock = [
@@ -74,7 +71,7 @@ export default function RegistroPresenca() {
     <div className="p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-lg font-semibold mb-4">Registro de Presença</h2>
       
-      <div className="grid grid-cols-3 gap-4 items-center font-medium mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 font-medium mb-4">
         <input
           type="text"
           placeholder="Buscar aluno..."
@@ -128,12 +125,14 @@ export default function RegistroPresenca() {
 
       {/* Modal de Confirmação */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
             <h2 className="text-lg font-semibold text-gray-800">
               Tem certeza que deseja salvar a chamada?
             </h2>
-            <p className="text-gray-600 text-sm">Disciplina: {disciplinas.find(d => d.id === disciplinaSelecionada)?.nome}</p>
+            <p className="text-gray-600 text-sm mt-2">
+              Disciplina: {disciplinas.find(d => d.id === disciplinaSelecionada)?.nome}
+            </p>
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={() => setShowModal(false)}
