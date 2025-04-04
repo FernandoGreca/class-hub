@@ -5,14 +5,14 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 export default function RegistroPresenca() {
   const [dataRegistro, setDataRegistro] = useState(new Date().toISOString().split("T")[0]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState("");
-  const [presencas, setPresencas] = useState<{ 
-    presenca: boolean; 
-    data: string; 
-    codigo_disciplina: string; 
-    id_aluno: string; 
-    nome_aluno: string; 
+  const [presencas, setPresencas] = useState<{
+    presenca: boolean;
+    data: string;
+    codigo_disciplina: string;
+    id_aluno: string;
+    nome_aluno: string;
   }[]>([]);
-  
+
   const [disciplinas, setDisciplinas] = useState<{ id: string; nome: string }[]>([]);
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -27,24 +27,38 @@ export default function RegistroPresenca() {
       setDisciplinas(disciplinasMock);
       setDisciplinaSelecionada(disciplinasMock[0]?.id || "");
     };
-    
+
     fetchDisciplinas();
   }, []);
 
   useEffect(() => {
     if (disciplinaSelecionada) {
       const fetchAlunos = async () => {
-        const alunosMock = [
-          { id_aluno: "101", nome_aluno: "João Silva" },
-          { id_aluno: "102", nome_aluno: "Maria Souza" },
-          { id_aluno: "103", nome_aluno: "Carlos Santos" },
-        ];
-        setPresencas(alunosMock.map((aluno) => ({
-          ...aluno,
-          presenca: false,
-          data: dataRegistro,
-          codigo_disciplina: disciplinaSelecionada
-        })));
+        const alunosPorDisciplina: Record<string, { id_aluno: string; nome_aluno: string }[]> = {
+          MAT101: [
+            { id_aluno: "101", nome_aluno: "João Silva" },
+            { id_aluno: "102", nome_aluno: "Maria Souza" },
+          ],
+          FIS102: [
+            { id_aluno: "201", nome_aluno: "Ana Lima" },
+            { id_aluno: "202", nome_aluno: "Pedro Rocha" },
+          ],
+          QUI103: [
+            { id_aluno: "301", nome_aluno: "Lucas Mendes" },
+            { id_aluno: "302", nome_aluno: "Carla Dias" },
+          ],
+        };
+
+        const alunos = alunosPorDisciplina[disciplinaSelecionada] || [];
+
+        setPresencas(
+          alunos.map((aluno) => ({
+            ...aluno,
+            presenca: false,
+            data: dataRegistro,
+            codigo_disciplina: disciplinaSelecionada,
+          }))
+        );
       };
 
       fetchAlunos();
@@ -70,7 +84,7 @@ export default function RegistroPresenca() {
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-lg font-semibold mb-4">Registro de Presença</h2>
-      
+
       {/* Filtros Responsivos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 font-medium mb-4">
         <input
@@ -108,7 +122,10 @@ export default function RegistroPresenca() {
       {/* Lista de Alunos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {alunosFiltrados.map((aluno) => (
-          <div key={aluno.id_aluno} className="flex items-center justify-between border rounded-lg p-3 shadow-sm bg-gray-50">
+          <div
+            key={aluno.id_aluno}
+            className="flex items-center justify-between border rounded-lg p-3 shadow-sm bg-gray-50"
+          >
             <span className="text-sm sm:text-base">{aluno.nome_aluno}</span>
             <input
               type="checkbox"

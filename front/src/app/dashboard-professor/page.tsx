@@ -10,21 +10,23 @@ export default function DashboardProfessor() {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="flex-1 p-6">
+    <div className="flex min-h-screen bg-gray-100">
+      <div className="flex-1 p-4 sm:p-6">
+        {/* Cabeçalho */}
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md">
           <h1 className="text-2xl font-semibold">Bem vindo, Professor</h1>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-6">
+        {/* Cards responsivos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           {/* Card de avisos */}
           <div className="bg-gray-200 p-4 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold">Ver últimos avisos</h2>
             <p className="text-gray-500 mt-2">Nenhum aviso encontrado</p>
           </div>
 
-          
-          <AtividadesPendentes atividades={atividades}  />
+          {/* Card de atividades pendentes */}
+          <AtividadesPendentes atividades={atividades} />
         </div>
       </div>
     </div>
