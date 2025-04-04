@@ -8,6 +8,7 @@ import {
   ClipboardDocumentListIcon,
   AcademicCapIcon,
   ArrowRightStartOnRectangleIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -30,6 +31,7 @@ export default function NavLinks({ isMobile }: { isMobile: boolean }) {
     { name: 'Atividades', href: '/dashboard-professor/disciplinas/atividades', icon: ClipboardDocumentListIcon },
     { name: 'Lançar Notas', href: '/dashboard-professor/disciplinas/atividades/inserir-nota-aluno-atividade', icon: AcademicCapIcon },
     { name: 'Fazer Chamada', href: '/dashboard-professor/disciplinas/presenca', icon: ArrowRightStartOnRectangleIcon },
+    { name: 'Relatório de Aunos', href: '/dashboard-professor/disciplinas/desempenho-alunos', icon:ChartBarIcon },
     { name: 'Pessoas', href: '/dashboard-professor/disciplinas/pessoas', icon: UsersIcon }
   ] : [
     { name: 'Home', href: '/dashboard-aluno', icon: HomeIcon },
