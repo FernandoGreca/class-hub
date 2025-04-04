@@ -100,14 +100,14 @@ export default function LancamentoNotas() {
   );
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-lg font-semibold mb-4">Lançamento de Notas</h2>
+    <div className="p-4 sm:p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-lg font-semibold mb-4 text-center sm:text-left">Lançamento de Notas</h2>
 
-      <div className="grid grid-cols-2 gap-4 items-center font-medium mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <select
           value={disciplinaSelecionada}
           onChange={(e) => handleDisciplinaChange(e.target.value)}
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 w-full text-sm"
         >
           <option value="" disabled>Selecione a disciplina</option>
           {disciplinas.map((disciplina) => (
@@ -120,7 +120,7 @@ export default function LancamentoNotas() {
         <select
           value={atividadeSelecionada}
           onChange={(e) => handleAtividadeChange(e.target.value)}
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 w-full text-sm"
           disabled={!disciplinaSelecionada}
         >
           <option value="" disabled>Selecione a atividade</option>
@@ -139,36 +139,38 @@ export default function LancamentoNotas() {
         placeholder="Buscar aluno..."
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
-        className="border rounded p-2 w-full mb-4"
+        className="border rounded p-2 w-full mb-4 text-sm"
         disabled={!atividadeSelecionada}
       />
 
-      <div className="grid grid-cols-3 gap-4 items-center font-medium mb-2">
+      <div className="hidden sm:grid grid-cols-3 gap-4 font-medium mb-2">
         <span>Aluno</span>
         <span>Nota</span>
         <span>Ação</span>
       </div>
 
       {alunosFiltrados.map((aluno) => (
-        <div key={aluno.id_aluno} className="grid grid-cols-3 gap-4 items-center mb-2">
-          <span>{aluno.nome_aluno}</span>
+        <div key={aluno.id_aluno} className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center mb-3">
+          <span className="font-medium">{aluno.nome_aluno}</span>
           <input
             type="number"
             min="0"
             max="100"
             value={aluno.nota}
             onChange={(e) => handleNotaChange(aluno.id_aluno, e.target.value)}
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full text-sm"
             disabled={notasLançadas.includes(aluno.id_aluno)}
           />
           <button
             onClick={() => handleSubmit(aluno.id_aluno)}
-            className={`cursor-pointer flex justify-center items-center py-2 px-4 rounded-lg ${
-              notasLançadas.includes(aluno.id_aluno) ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+            className={`flex justify-center items-center py-2 px-4 rounded-lg text-sm ${
+              notasLançadas.includes(aluno.id_aluno)
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
             } text-white`}
             disabled={aluno.nota === "" || notasLançadas.includes(aluno.id_aluno)}
           >
-            <ArrowRightCircleIcon className="w-6 h-6 text-white mr-1" />
+            <ArrowRightCircleIcon className="w-5 h-5 mr-1" />
             {notasLançadas.includes(aluno.id_aluno) ? "Lançado" : "Lançar"}
           </button>
         </div>
@@ -176,17 +178,17 @@ export default function LancamentoNotas() {
 
       <button
         onClick={handleSubmitAll}
-        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 text-sm"
         disabled={notas.every((n) => notasLançadas.includes(n.id_aluno))}
       >
-        <CheckCircleIcon className="w-6 h-6 text-white mr-2" />
+        <CheckCircleIcon className="w-5 h-5 mr-2" />
         Lançar todas as notas preenchidas
       </button>
 
       {/* Modal de Confirmação */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm z-50 p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
             <h2 className="text-lg font-semibold text-gray-800">
               {acaoModal === "todas"
                 ? "Deseja lançar todas as notas preenchidas?"
@@ -199,13 +201,13 @@ export default function LancamentoNotas() {
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmacaoModal}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
               >
                 Confirmar
               </button>
