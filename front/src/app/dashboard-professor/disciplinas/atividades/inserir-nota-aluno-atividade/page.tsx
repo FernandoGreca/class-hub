@@ -9,6 +9,10 @@ export default function LancamentoNotas() {
   const [processando, setProcessando] = useState(false);
   const [notasLançadas, setNotasLançadas] = useState<string[]>([]);
 
+  const [showModal, setShowModal] = useState(false);
+  const [acaoModal, setAcaoModal] = useState<"individual" | "todas" | null>(null);
+  const [alunoSelecionado, setAlunoSelecionado] = useState<string | null>(null);
+
   const disciplinas = [
     { id: "MAT101", nome: "Matemática" },
     { id: "PORT102", nome: "Português" },
@@ -60,30 +64,34 @@ export default function LancamentoNotas() {
 
   const handleSubmit = (id_aluno: string) => {
     if (processando || notasLançadas.includes(id_aluno)) return;
-
-    setProcessando(true);
-
-    const notaLançada = notas.find(n => n.id_aluno === id_aluno);
-    if (notaLançada) {
-      console.log("Nota lançada:", notaLançada);
-    }
-
-    setNotasLançadas((prev) => [...prev, id_aluno]);
-
-    setTimeout(() => setProcessando(false), 1000);
+    setAlunoSelecionado(id_aluno);
+    setAcaoModal("individual");
+    setShowModal(true);
   };
 
   const handleSubmitAll = () => {
-    if (processando) return;
+    if (processando || notas.every((n) => n.nota === "")) return;
+    setAcaoModal("todas");
+    setShowModal(true);
+  };
 
-    const notasPreenchidas = notas.filter((n) => n.nota !== "");
-    if (notasPreenchidas.length === 0) return;
+  const handleConfirmacaoModal = () => {
+    if (acaoModal === "individual" && alunoSelecionado) {
+      setProcessando(true);
+      const notaLançada = notas.find(n => n.id_aluno === alunoSelecionado);
+      if (notaLançada) console.log("Nota lançada:", notaLançada);
 
-    console.log("Notas lançadas:", notasPreenchidas);
+      setNotasLançadas((prev) => [...prev, alunoSelecionado]);
+      setAlunoSelecionado(null);
+    }
 
-    setProcessando(true);
-    setNotasLançadas(notasPreenchidas.map((n) => n.id_aluno));
+    if (acaoModal === "todas") {
+      const notasPreenchidas = notas.filter((n) => n.nota !== "");
+      console.log("Notas lançadas:", notasPreenchidas);
+      setNotasLançadas(notasPreenchidas.map((n) => n.id_aluno));
+    }
 
+    setShowModal(false);
     setTimeout(() => setProcessando(false), 1000);
   };
 
@@ -174,6 +182,37 @@ export default function LancamentoNotas() {
         <CheckCircleIcon className="w-6 h-6 text-white mr-2" />
         Lançar todas as notas preenchidas
       </button>
+
+      {/* Modal de Confirmação */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+            <h2 className="text-lg font-semibold text-gray-800">
+              {acaoModal === "todas"
+                ? "Deseja lançar todas as notas preenchidas?"
+                : "Deseja lançar a nota deste aluno?"}
+            </h2>
+            <p className="text-gray-600 text-sm mt-2">
+              Disciplina: {disciplinas.find(d => d.id === disciplinaSelecionada)?.nome}<br />
+              Atividade: {atividades.find(a => a.id === atividadeSelecionada)?.nome}
+            </p>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmacaoModal}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
