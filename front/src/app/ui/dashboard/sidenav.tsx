@@ -15,7 +15,7 @@ export default function SideNav() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 420);
+      setIsMobile(window.innerWidth <= 470);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
