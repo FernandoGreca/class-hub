@@ -71,6 +71,7 @@ export default function RegistroPresenca() {
     <div className="p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-lg font-semibold mb-4">Registro de Presença</h2>
       
+      {/* Filtros Responsivos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 font-medium mb-4">
         <input
           type="text"
@@ -98,26 +99,31 @@ export default function RegistroPresenca() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 items-center font-medium mb-2">
+      {/* Cabeçalho da Lista de Alunos */}
+      <div className="hidden sm:grid grid-cols-2 gap-4 font-medium mb-2">
         <span>Aluno</span>
         <span>Presença</span>
       </div>
 
-      {alunosFiltrados.map((aluno) => (
-        <div key={aluno.id_aluno} className="grid grid-cols-2 gap-4 items-center mb-2">
-          <span>{aluno.nome_aluno}</span>
-          <input
-            type="checkbox"
-            checked={aluno.presenca}
-            onChange={() => handlePresencaChange(aluno.id_aluno)}
-            className="w-5 h-5"
-          />
-        </div>
-      ))}
+      {/* Lista de Alunos */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {alunosFiltrados.map((aluno) => (
+          <div key={aluno.id_aluno} className="flex items-center justify-between border rounded-lg p-3 shadow-sm bg-gray-50">
+            <span className="text-sm sm:text-base">{aluno.nome_aluno}</span>
+            <input
+              type="checkbox"
+              checked={aluno.presenca}
+              onChange={() => handlePresencaChange(aluno.id_aluno)}
+              className="w-5 h-5"
+            />
+          </div>
+        ))}
+      </div>
 
+      {/* Botão Salvar */}
       <button
         onClick={() => setShowModal(true)}
-        className="mt-4 w-full flex justify-center items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+        className="mt-6 w-full flex justify-center items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
       >
         <CheckCircleIcon className="w-6 h-6 text-white mr-1" />
         Salvar Todas Presenças
