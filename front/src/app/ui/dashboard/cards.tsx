@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import Dropdown from "./dropdown";
 import { useState, useEffect } from "react";
+import { CalendarIcon } from "@heroicons/react/16/solid";
 
 const colorMapping: Record<string, string> = {
   red: "bg-red-800",
@@ -73,15 +74,23 @@ export default function Card({
   };
 
   const irParaPresencas = () => {
-    router.push(
-      `/dashboard-professor/disciplinas/presenca/presencas-registradas?codigo=${encodeURIComponent(codigoDisciplina)}`
-    );
+    const storedRole = sessionStorage.getItem("role");
+
+    if (storedRole === "professor") {
+      router.push(
+        `/dashboard-professor/disciplinas/presenca/presencas-registradas?codigo=${encodeURIComponent(codigoDisciplina)}`
+      );
+    } else if (storedRole === "aluno") {
+      router.push(
+        `/dashboard-aluno/disciplinas/presenca-aluno?codigo=${encodeURIComponent(codigoDisciplina)}`
+      );
+    }
   };
 
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
       <div
-        className={`w-72 h-50 bg-white rounded-lg shadow-md border transition-transform transform-gpu flex flex-col justify-between ${isMobile ? "cursor-pointer" : ""}`}
+        className={`w-82 h-60 bg-white rounded-lg shadow-md border transition-transform transform-gpu flex flex-col justify-between ${isMobile ? "cursor-pointer" : ""}`}
         onClick={isMobile ? onClick : undefined}
       >
         <button
@@ -96,16 +105,25 @@ export default function Card({
         </button>
 
         <div className="relative p-4 flex-grow">
-          <img src={fotoPerfil || "/fotoPerfil.jpeg"} alt="Foto Perfil" className="w-16 h-14 rounded-full absolute -top-7 right-3 shadow" />
+          <img src={fotoPerfil || "/fotoPerfil.jpeg"} alt="Foto Perfil" className="w-16 h-14 rounded-full absolute -top-7 right-1 shadow" />
           <p className="text-gray-700 font-bold mt-4">{nomeProfessor}</p>
         </div>
 
-        {role === "professor" && (
+        {role && (
           <div className="p-4 flex justify-center gap-2">
-            <button onClick={onClick} className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
-              Ver Atividades
-            </button>
-            <button onClick={irParaPresencas} className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">
+            {role === "professor" && (
+              <button
+                onClick={onClick}
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+              >
+                Ver Atividades
+              </button>
+            )}
+            <button
+              onClick={irParaPresencas}
+              className={`text-white py-2 px-4 rounded-lg flex gap-2 items-center justify-center hover:bg-gray-900 r ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
+            >
+              <CalendarIcon className="w-6 text-white" />
               Ver Presenças
             </button>
           </div>

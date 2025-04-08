@@ -136,10 +136,10 @@ export default function PresencasRegistradas() {
       {presencasFiltradas.length > 0 ? (
         <table className="w-full table-auto border">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="p-2 border">Aluno</th>
-              <th className="p-2 border">Data</th>
-              <th className="p-2 border">Presença</th>
+            <tr className="bg-blue-600 text-white border-2 border-black">
+              <th className="p-3 border">Aluno</th>
+              <th className="p-3 border">Data</th>
+              <th className="p-3 border">Presença</th>
             </tr>
           </thead>
           <tbody>

@@ -79,16 +79,6 @@ export default function Atividades() {
                         Criar Atividade
                     </button>
                 )}
-
-                {role === "aluno" && (
-                    <button
-                        onClick={handleVerPresencas}
-                        className="cursor-pointer gap-2 flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
-                    >
-                    <CalendarIcon className="w-6 text-white" />
-                    Ver Presenças Registradas
-                    </button>
-                )}
             </div>
 
             <div className="w-full mx-auto bg-gray-100 p-4 rounded-lg shadow-md">
