@@ -21,7 +21,7 @@ export default function LoginPage() {
       });
 
       const token = response.data.access_token;
-      console.log("Token recebido:", token);
+      console.log("Token recebido:", response);
 
       // Salva token no sessionStorage
       sessionStorage.setItem("token", token);

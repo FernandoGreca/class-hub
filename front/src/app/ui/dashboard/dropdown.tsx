@@ -60,14 +60,6 @@ export default function Dropdown({ nomeDisciplina, userType }: DropdownProps) {
         <ul className="absolute text-sm mt-2 w-45 bg-white border rounded-md shadow-lg z-[9999]">
           <li>
             <button
-              className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-md"
-              onClick={irParaAtividades}
-            >
-              Ir para atividades
-            </button>
-          </li>
-          <li>
-            <button
               className="w-full text-left font-bold px-4 py-2 hover:bg-red-100 rounded-md text-red-500"
               onClick={(e) => e.stopPropagation()}
             >

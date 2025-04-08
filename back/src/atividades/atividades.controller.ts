@@ -15,7 +15,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('atividades')
 export class AtividadesController {
   constructor(private readonly atividadesService: AtividadesService) {}

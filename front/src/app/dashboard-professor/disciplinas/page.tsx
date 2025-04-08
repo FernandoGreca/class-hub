@@ -65,13 +65,12 @@ export default function DashboardDisicplinaProfessor() {
                             key={disciplina._id}
                             nomeDisciplina={disciplina.nome}
                             fotoPerfil={undefined}
-                            nomeProfessor={
-                                disciplina.professores ? disciplina.professores[0] : "Professor Desconhecido"
-                            }
+                            nomeProfessor={disciplina.professores ? disciplina.professores[0] : "Professor Desconhecido"}
                             buttonBgColor="purple"
                             buttonBgColorHover="purple"
-                            onClick={() => irParaAtividades(disciplina.nome)}
-                        />
+                            onClick={() => irParaAtividades(disciplina.codigo_disciplina)} 
+                            codigoDisciplina={disciplina.codigo_disciplina}                        
+                            />
                     ))
                 ) : (
                     <p>Não há disciplinas disponíveis.</p>

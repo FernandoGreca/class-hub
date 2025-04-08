@@ -27,21 +27,22 @@ const colorMappingHover: Record<string, string> = {
 
 interface CardProps {
   nomeDisciplina: string;
+  codigoDisciplina: string; // <- novo campo
   fotoPerfil?: string;
   nomeProfessor: string;
   buttonBgColor?: string;
   buttonBgColorHover?: string;
   onClick?: () => void;
-
 }
 
 export default function Card({
   nomeDisciplina,
+  codigoDisciplina,
   fotoPerfil,
   nomeProfessor,
   buttonBgColor = "gray",
   buttonBgColorHover = "gray",
-  onClick, // Adicionando o onClick
+  onClick,
 }: CardProps) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
@@ -68,9 +69,8 @@ export default function Card({
         ? "/dashboard-professor/disciplinas/atividades"
         : "/dashboard-aluno/disciplinas/atividades";
 
-    router.push(`${basePath}?disciplina=${encodeURIComponent(nomeDisciplina)}`);
+    router.push(`${basePath}?disciplina=${encodeURIComponent(codigoDisciplina)}`);
   };
-
 
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
@@ -80,7 +80,7 @@ export default function Card({
       >
         <button
           className={`w-full cursor-pointer rounded-t-lg text-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
-          onClick={irParaAtividades} // Chama a função de navegação
+          onClick={irParaAtividades}
         >
           <div className="flex justify-center text-white p-4 rounded-t-lg relative">
             <h2 className="text-lg font-semibold truncate max-w-[calc(100%-4.5rem)]">
