@@ -27,7 +27,7 @@ const colorMappingHover: Record<string, string> = {
 
 interface CardProps {
   nomeDisciplina: string;
-  codigoDisciplina: string; // <- novo campo
+  codigoDisciplina: string;
   fotoPerfil?: string;
   nomeProfessor: string;
   buttonBgColor?: string;
@@ -72,6 +72,12 @@ export default function Card({
     router.push(`${basePath}?disciplina=${encodeURIComponent(codigoDisciplina)}`);
   };
 
+  const irParaPresencas = () => {
+    router.push(
+      `/dashboard-professor/disciplinas/presenca/presencas-registradas?codigo=${encodeURIComponent(codigoDisciplina)}`
+    );
+  };
+
   return (
     <div className="relative will-change-transform transition-transform duration-300 ease-in-out hover:scale-105">
       <div
@@ -95,9 +101,12 @@ export default function Card({
         </div>
 
         {role === "professor" && (
-          <div className="p-4 flex justify-center">
+          <div className="p-4 flex justify-center gap-2">
             <button onClick={onClick} className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
               Ver Atividades
+            </button>
+            <button onClick={irParaPresencas} className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">
+              Ver Presenças
             </button>
           </div>
         )}

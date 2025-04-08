@@ -4,66 +4,72 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 export default function RegistroPresenca() {
   const [dataRegistro, setDataRegistro] = useState(new Date().toISOString().split("T")[0]);
+  const [disciplinas, setDisciplinas] = useState<{ codigo_disciplina: string; nome: string }[]>([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState("");
-  const [presencas, setPresencas] = useState<{
-    presenca: boolean;
-    data: string;
-    codigo_disciplina: string;
-    id_aluno: string;
-    nome_aluno: string;
-  }[]>([]);
-
-  const [disciplinas, setDisciplinas] = useState<{ id: string; nome: string }[]>([]);
+  const [presencas, setPresencas] = useState<any[]>([]);
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    const fetchDisciplinas = async () => {
-      const disciplinasMock = [
-        { id: "MAT101", nome: "Matemática" },
-        { id: "FIS102", nome: "Física" },
-        { id: "QUI103", nome: "Química" },
-      ];
-      setDisciplinas(disciplinasMock);
-      setDisciplinaSelecionada(disciplinasMock[0]?.id || "");
-    };
-
-    fetchDisciplinas();
-  }, []);
+  const token = typeof window !== 'undefined' ? sessionStorage.getItem("token") : null;
+  const userId = typeof window !== 'undefined' ? sessionStorage.getItem("userId") : null;
 
   useEffect(() => {
-    if (disciplinaSelecionada) {
-      const fetchAlunos = async () => {
-        const alunosPorDisciplina: Record<string, { id_aluno: string; nome_aluno: string }[]> = {
-          MAT101: [
-            { id_aluno: "101", nome_aluno: "João Silva" },
-            { id_aluno: "102", nome_aluno: "Maria Souza" },
-          ],
-          FIS102: [
-            { id_aluno: "201", nome_aluno: "Ana Lima" },
-            { id_aluno: "202", nome_aluno: "Pedro Rocha" },
-          ],
-          QUI103: [
-            { id_aluno: "301", nome_aluno: "Lucas Mendes" },
-            { id_aluno: "302", nome_aluno: "Carla Dias" },
-          ],
-        };
+    async function fetchDisciplinasDoProfessor() {
+      if (!userId || !token) return;
 
-        const alunos = alunosPorDisciplina[disciplinaSelecionada] || [];
+      try {
+        const res = await fetch(`http://localhost:3000/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "*/*",
+          },
+        });
 
-        setPresencas(
-          alunos.map((aluno) => ({
-            ...aluno,
-            presenca: false,
-            data: dataRegistro,
-            codigo_disciplina: disciplinaSelecionada,
-          }))
-        );
-      };
-
-      fetchAlunos();
+        const data = await res.json();
+        const lista = data.disciplinas || [];
+        setDisciplinas(lista);
+        if (lista.length > 0) {
+          setDisciplinaSelecionada(lista[0].codigo_disciplina);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar disciplinas:", error);
+      }
     }
-  }, [disciplinaSelecionada, dataRegistro]);
+
+    fetchDisciplinasDoProfessor();
+  }, [userId, token]);
+
+  useEffect(() => {
+    async function fetchAlunosDaDisciplina() {
+      if (!disciplinaSelecionada || !token) return;
+
+      try {
+        const res = await fetch(`http://localhost:3000/disciplinas/${disciplinaSelecionada}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "*/*",
+          },
+        });
+
+        const data = await res.json();
+        const alunos = data.alunos || [];
+
+        const presencasFormatadas = alunos.map((aluno: any) => ({
+          id_aluno: aluno._id,
+          nome_aluno: aluno.nome,
+          presenca: false,
+          data: dataRegistro,
+          codigo_disciplina: disciplinaSelecionada,
+        }));
+
+        setPresencas(presencasFormatadas);
+      } catch (error) {
+        console.error("Erro ao buscar alunos da disciplina:", error);
+      }
+    }
+
+    fetchAlunosDaDisciplina();
+  }, [disciplinaSelecionada, dataRegistro, token]);
 
   const handlePresencaChange = (id_aluno: string) => {
     setPresencas((prev) =>
@@ -71,9 +77,26 @@ export default function RegistroPresenca() {
     );
   };
 
-  const handleConfirmSubmit = () => {
-    const presencasAtualizadas = presencas.map((p) => ({ ...p, data: dataRegistro }));
-    console.log("Presenças registradas:", presencasAtualizadas);
+  const handleConfirmSubmit = async () => {
+    try {
+      const promises = presencas.map((presenca) =>
+        fetch("http://localhost:3000/presencas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ ...presenca, data: new Date(dataRegistro).toISOString() }),
+        })
+      );
+
+      await Promise.all(promises);
+      alert("Presenças registradas com sucesso!");
+    } catch (error) {
+      alert("Erro ao registrar presenças.");
+      console.error(error);
+    }
+
     setShowModal(false);
   };
 
@@ -85,7 +108,6 @@ export default function RegistroPresenca() {
     <div className="p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-lg font-semibold mb-4">Registro de Presença</h2>
 
-      {/* Filtros Responsivos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 font-medium mb-4">
         <input
           type="text"
@@ -99,9 +121,9 @@ export default function RegistroPresenca() {
           onChange={(e) => setDisciplinaSelecionada(e.target.value)}
           className="border rounded p-2 w-full"
         >
-          {disciplinas.map((disciplina) => (
-            <option key={disciplina.id} value={disciplina.id}>
-              {disciplina.nome}
+          {disciplinas.map((disc) => (
+            <option key={disc.codigo_disciplina} value={disc.codigo_disciplina}>
+              {disc.nome}
             </option>
           ))}
         </select>
@@ -113,13 +135,11 @@ export default function RegistroPresenca() {
         />
       </div>
 
-      {/* Cabeçalho da Lista de Alunos */}
       <div className="hidden sm:grid grid-cols-2 gap-4 font-medium mb-2">
         <span>Aluno</span>
         <span>Presença</span>
       </div>
 
-      {/* Lista de Alunos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {alunosFiltrados.map((aluno) => (
           <div
@@ -137,7 +157,6 @@ export default function RegistroPresenca() {
         ))}
       </div>
 
-      {/* Botão Salvar */}
       <button
         onClick={() => setShowModal(true)}
         className="mt-6 w-full flex justify-center items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
@@ -146,7 +165,6 @@ export default function RegistroPresenca() {
         Salvar Todas Presenças
       </button>
 
-      {/* Modal de Confirmação */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
@@ -154,7 +172,7 @@ export default function RegistroPresenca() {
               Tem certeza que deseja salvar a chamada?
             </h2>
             <p className="text-gray-600 text-sm mt-2">
-              Disciplina: {disciplinas.find(d => d.id === disciplinaSelecionada)?.nome}
+              Disciplina: {disciplinas.find(d => d.codigo_disciplina === disciplinaSelecionada)?.nome}
             </p>
             <div className="mt-4 flex justify-center gap-4">
               <button

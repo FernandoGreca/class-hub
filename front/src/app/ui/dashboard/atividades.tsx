@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ClipboardDocumentIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentIcon, PlusIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function Atividades() {
@@ -63,9 +63,13 @@ export default function Atividades() {
         }
     };
 
+    const handleVerPresencas = () => {
+        router.push(`/dashboard-aluno/disciplinas/presenca-aluno?disciplina=${disciplinaAtual}`);
+    };
+
     return (
         <>
-            <div className="mt-4 mb-4 flex justify-end">
+            <div className="mt-4 mb-4 flex justify-end space-x-2">
                 {role === "professor" && (
                     <button
                         onClick={handleCriarAtividade}
@@ -73,6 +77,16 @@ export default function Atividades() {
                     >
                         <PlusIcon className="w-6 h-6 text-white mr-1" />
                         Criar Atividade
+                    </button>
+                )}
+
+                {role === "aluno" && (
+                    <button
+                        onClick={handleVerPresencas}
+                        className="cursor-pointer gap-2 flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                    >
+                    <CalendarIcon className="w-6 text-white" />
+                    Ver Presenças Registradas
                     </button>
                 )}
             </div>
