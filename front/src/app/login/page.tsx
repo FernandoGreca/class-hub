@@ -37,6 +37,7 @@ export default function LoginPage() {
 
       // Salva o usuário e a role no sessionStorage
       sessionStorage.setItem("User", JSON.stringify(user));
+      sessionStorage.setItem("userId", user._id); // <-- ESSA LINHA
       sessionStorage.setItem("role", user.e_professor ? "professor" : "aluno");
 
       // Redireciona para o dashboard correto

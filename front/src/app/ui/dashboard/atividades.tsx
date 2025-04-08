@@ -10,10 +10,12 @@ export default function Atividades() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
         setRole(sessionStorage.getItem("role") ?? null);
+        setUserId(sessionStorage.getItem("userId") ?? null);
 
         async function fetchAtividades() {
             if (!disciplinaAtual) return;
@@ -34,7 +36,6 @@ export default function Atividades() {
                 const data = await response.json();
                 if (!data.atividades) throw new Error("Nenhuma atividade encontrada");
 
-                // Remove duplicatas pelo _id
                 const atividadesUnicas = data.atividades.filter(
                     (atividade: any, index: number, self: any[]) =>
                         index === self.findIndex((a) => a._id === atividade._id)
@@ -84,27 +85,46 @@ export default function Atividades() {
 
                 <ul className="mt-2">
                     {atividades.length > 0 ? (
-                        atividades.map((atividade) => (
-                            <li
-                                key={atividade._id}
-                                className="flex items-start space-x-3 p-3 hover:bg-gray-200 rounded-lg cursor-pointer"
-                            >
-                                <div className="flex-shrink-0">
-                                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                        <ClipboardDocumentIcon className="w-5 h-5 text-gray-700" />
+                        atividades.map((atividade) => {
+                            // Pega a nota do aluno logado (se for aluno)
+                            let notaDoAluno = null;
+                            if (role === "aluno" && atividade.nota_alunos && userId) {
+                                const notaEncontrada = atividade.nota_alunos.find(
+                                    (n: any) => n.id_aluno === userId
+                                );
+                                notaDoAluno = notaEncontrada ? notaEncontrada.nota : null;
+                            }
+
+                            return (
+                                <li
+                                    key={atividade._id}
+                                    className="flex items-start justify-between space-x-3 p-3 hover:bg-gray-200 rounded-lg cursor-pointer"
+                                >
+                                    <div className="flex items-start space-x-3">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                                <ClipboardDocumentIcon className="w-5 h-5 text-gray-700" />
+                                            </div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-gray-900 font-medium">{atividade.nome}</p>
+                                            <p className="text-gray-600 text-sm">Disciplina: {atividade.disciplina}</p>
+                                            <p className="text-gray-500 text-xs">
+                                                Data de entrega:{" "}
+                                                {new Date(atividade.data_entrega).toLocaleDateString("pt-BR")}
+                                            </p>
+                                            <p className="text-gray-700 text-xs">Nota máxima: {atividade.nota}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-gray-900 font-medium">{atividade.nome}</p>
-                                    <p className="text-gray-600 text-sm">Disciplina: {atividade.disciplina}</p>
-                                    <p className="text-gray-500 text-xs">
-                                        Data de entrega:{" "}
-                                        {new Date(atividade.data_entrega).toLocaleDateString("pt-BR")}
-                                    </p>
-                                    <p className="text-gray-700 text-xs">Nota máxima: {atividade.nota}</p>
-                                </div>
-                            </li>
-                        ))
+
+                                    {role === "aluno" && (
+                                        <div className="text-right text-sm text-gray-800 font-semibold whitespace-nowrap">
+                                            {notaDoAluno !== null ? `${notaDoAluno}/${atividade.nota}` : `--/${atividade.nota}`}
+                                        </div>
+                                    )}
+                                </li>
+                            );
+                        })
                     ) : (
                         <p className="text-gray-500 text-sm text-center mt-4">
                             Nenhuma atividade encontrada para {disciplinaAtual}.
