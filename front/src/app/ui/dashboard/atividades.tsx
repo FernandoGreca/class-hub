@@ -17,11 +17,10 @@ export default function Atividades() {
 
         async function fetchAtividades() {
             if (!disciplinaAtual) return;
-            
+
             try {
                 const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
                 if (!token) throw new Error("Token não encontrado");
-                console.log(disciplinaAtual)
 
                 const response = await fetch(`http://localhost:3000/disciplinas/${disciplinaAtual}`, {
                     headers: {
@@ -29,16 +28,19 @@ export default function Atividades() {
                         Accept: "*/*",
                     },
                 });
-                console.log(response)
-                console.log("OOOOOOO" + token)
-                
-                if (!response.ok) throw new Error("Erro ao buscar dados da disciplina");
-                
-                const data = await response.json();
 
+                if (!response.ok) throw new Error("Erro ao buscar dados da disciplina");
+
+                const data = await response.json();
                 if (!data.atividades) throw new Error("Nenhuma atividade encontrada");
 
-                setAtividades(data.atividades);
+                // Remove duplicatas pelo _id
+                const atividadesUnicas = data.atividades.filter(
+                    (atividade: any, index: number, self: any[]) =>
+                        index === self.findIndex((a) => a._id === atividade._id)
+                );
+
+                setAtividades(atividadesUnicas);
             } catch (error) {
                 setError(error instanceof Error ? error.message : "Erro desconhecido");
             } finally {
@@ -82,9 +84,9 @@ export default function Atividades() {
 
                 <ul className="mt-2">
                     {atividades.length > 0 ? (
-                        atividades.map((atividade, index) => (
+                        atividades.map((atividade) => (
                             <li
-                                key={atividade._id || index}
+                                key={atividade._id}
                                 className="flex items-start space-x-3 p-3 hover:bg-gray-200 rounded-lg cursor-pointer"
                             >
                                 <div className="flex-shrink-0">

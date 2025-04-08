@@ -19,9 +19,9 @@ export default function LancamentoNotas() {
 
   const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
   const user =
-  typeof window !== "undefined"
-    ? JSON.parse(sessionStorage.getItem("User") || "{}")
-    : null;
+    typeof window !== "undefined"
+      ? JSON.parse(sessionStorage.getItem("User") || "{}")
+      : null;
 
   const userId = user?._id || null;
 
@@ -48,7 +48,14 @@ export default function LancamentoNotas() {
     setDisciplinaSelecionada(id);
     setAtividadeSelecionada("");
     setTodosAlunos(disciplina.alunos);
-    setAtividades(disciplina.atividades);
+
+    // Remover duplicatas nas atividades com base no _id
+    const atividadesUnicas = disciplina.atividades.filter(
+      (atividade: { _id: any; }, index: any, self: any[]) =>
+        index === self.findIndex((a) => a._id === atividade._id)
+    );
+    setAtividades(atividadesUnicas);
+
     setNotas([]);
     setNotasLançadas([]);
   };
