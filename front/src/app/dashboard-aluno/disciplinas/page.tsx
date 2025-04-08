@@ -61,7 +61,7 @@ export default function Dashboard() {
               nomeProfessor={disciplina.professores ? disciplina.professores[0] : "Professor Desconhecido"}
               buttonBgColor="purple"
               buttonBgColorHover="purple"
-              codigoDisciplina={disciplina.codigo_disciplina}            />
+              codigoDisciplina={disciplina.codigo_disciplina}/>
           ))
         ) : (
           <p>Não há disciplinas disponíveis.</p>

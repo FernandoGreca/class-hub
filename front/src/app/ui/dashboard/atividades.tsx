@@ -19,7 +19,7 @@ export default function Atividades() {
             if (!disciplinaAtual) return;
             
             try {
-                const token = sessionStorage.getItem("token");
+                const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
                 if (!token) throw new Error("Token não encontrado");
                 console.log(disciplinaAtual)
 
@@ -30,6 +30,7 @@ export default function Atividades() {
                     },
                 });
                 console.log(response)
+                console.log("OOOOOOO" + token)
                 
                 if (!response.ok) throw new Error("Erro ao buscar dados da disciplina");
                 

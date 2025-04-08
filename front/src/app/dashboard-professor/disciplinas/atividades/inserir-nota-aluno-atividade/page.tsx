@@ -1,58 +1,68 @@
 'use client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRightCircleIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 
 export default function LancamentoNotas() {
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState("");
+  const [disciplinas, setDisciplinas] = useState<any[]>([]);
   const [atividadeSelecionada, setAtividadeSelecionada] = useState("");
-  const [busca, setBusca] = useState("");
-  const [processando, setProcessando] = useState(false);
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState("");
+  const [atividades, setAtividades] = useState<any[]>([]);
+  const [todosAlunos, setTodosAlunos] = useState<any[]>([]);
+  const [notas, setNotas] = useState<any[]>([]);
   const [notasLançadas, setNotasLançadas] = useState<string[]>([]);
+  const [busca, setBusca] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [acaoModal, setAcaoModal] = useState<"individual" | "todas" | null>(null);
   const [alunoSelecionado, setAlunoSelecionado] = useState<string | null>(null);
+  const [processando, setProcessando] = useState(false);
 
-  const disciplinas = [
-    { id: "MAT101", nome: "Matemática" },
-    { id: "PORT102", nome: "Português" },
-  ];
+  const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+  const user =
+  typeof window !== "undefined"
+    ? JSON.parse(sessionStorage.getItem("User") || "{}")
+    : null;
 
-  const atividades = [
-    { id: "1", nome: "Prova 1", disciplinaId: "MAT101" },
-    { id: "2", nome: "Trabalho Final", disciplinaId: "MAT101" },
-    { id: "3", nome: "Apresentação", disciplinaId: "PORT102" },
-  ];
+  const userId = user?._id || null;
 
-  const todosAlunos = [
-    { id_aluno: "101", nome_aluno: "João Silva", disciplinaId: "MAT101" },
-    { id_aluno: "102", nome_aluno: "Maria Souza", disciplinaId: "MAT101" },
-    { id_aluno: "103", nome_aluno: "Carlos Santos", disciplinaId: "PORT102" },
-  ];
-
-  const [notas, setNotas] = useState<
-    { id_atividade: string; id_aluno: string; nome_aluno: string; nota: string; disciplinaId: string }[]
-  >([]);
+  useEffect(() => {
+    if (!userId || !token) return;
+    fetch(`http://localhost:3000/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(async data => {
+        const disciplinasUser = await Promise.all(data.disciplinas.map(async (disciplina: any) => {
+          const res = await fetch(`http://localhost:3000/disciplinas/${disciplina.codigo_disciplina}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          return res.json();
+        }));
+        setDisciplinas(disciplinasUser);
+      });
+  }, [userId, token]);
 
   const handleDisciplinaChange = (id: string) => {
+    const disciplina = disciplinas.find(d => d.codigo_disciplina === id);
+    if (!disciplina) return;
     setDisciplinaSelecionada(id);
     setAtividadeSelecionada("");
+    setTodosAlunos(disciplina.alunos);
+    setAtividades(disciplina.atividades);
     setNotas([]);
     setNotasLançadas([]);
   };
 
   const handleAtividadeChange = (id: string) => {
     setAtividadeSelecionada(id);
-    const alunosFiltrados = todosAlunos
-      .filter(aluno => aluno.disciplinaId === disciplinaSelecionada)
-      .map(aluno => ({
-        id_atividade: id,
-        id_aluno: aluno.id_aluno,
-        nome_aluno: aluno.nome_aluno,
-        nota: "",
-        disciplinaId: disciplinaSelecionada,
-      }));
-    setNotas(alunosFiltrados);
+    const alunos = todosAlunos.map(aluno => ({
+      id_atividade: id,
+      id_aluno: aluno._id,
+      nome_aluno: aluno.nome,
+      nota: "",
+      disciplinaId: disciplinaSelecionada,
+    }));
+    setNotas(alunos);
     setNotasLançadas([]);
   };
 
@@ -60,6 +70,27 @@ export default function LancamentoNotas() {
     setNotas((prev) =>
       prev.map((n) => (n.id_aluno === id_aluno ? { ...n, nota: valor } : n))
     );
+  };
+
+  const enviarNota = async (nota: any) => {
+    console.log(nota)
+    const res = await fetch("http://localhost:3000/atividades/inserir-nota-aluno-atividade", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id_atividade: nota.id_atividade,
+        id_aluno: nota.id_aluno,
+        nome_aluno: nota.nome_aluno,
+        nota: Number(nota.nota),
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("Erro ao enviar nota:", await res.text());
+    }
   };
 
   const handleSubmit = (id_aluno: string) => {
@@ -75,23 +106,27 @@ export default function LancamentoNotas() {
     setShowModal(true);
   };
 
-  const handleConfirmacaoModal = () => {
-    if (acaoModal === "individual" && alunoSelecionado) {
-      setProcessando(true);
-      const notaLançada = notas.find(n => n.id_aluno === alunoSelecionado);
-      if (notaLançada) console.log("Nota lançada:", notaLançada);
+  const handleConfirmacaoModal = async () => {
+    setProcessando(true);
 
-      setNotasLançadas((prev) => [...prev, alunoSelecionado]);
-      setAlunoSelecionado(null);
+    if (acaoModal === "individual" && alunoSelecionado) {
+      const nota = notas.find(n => n.id_aluno === alunoSelecionado);
+      if (nota) {
+        await enviarNota(nota);
+        setNotasLançadas((prev) => [...prev, alunoSelecionado]);
+      }
     }
 
     if (acaoModal === "todas") {
-      const notasPreenchidas = notas.filter((n) => n.nota !== "");
-      console.log("Notas lançadas:", notasPreenchidas);
-      setNotasLançadas(notasPreenchidas.map((n) => n.id_aluno));
+      const notasValidas = notas.filter(n => n.nota !== "" && !notasLançadas.includes(n.id_aluno));
+      for (const nota of notasValidas) {
+        await enviarNota(nota);
+      }
+      setNotasLançadas((prev) => [...prev, ...notasValidas.map(n => n.id_aluno)]);
     }
 
     setShowModal(false);
+    setAlunoSelecionado(null);
     setTimeout(() => setProcessando(false), 1000);
   };
 
@@ -107,11 +142,11 @@ export default function LancamentoNotas() {
         <select
           value={disciplinaSelecionada}
           onChange={(e) => handleDisciplinaChange(e.target.value)}
-          className="border rounded p-2 w-full "
+          className="border rounded p-2 w-full"
         >
           <option value="" disabled>Selecione a disciplina</option>
           {disciplinas.map((disciplina) => (
-            <option key={disciplina.id} value={disciplina.id}>
+            <option key={disciplina.codigo_disciplina} value={disciplina.codigo_disciplina}>
               {disciplina.nome}
             </option>
           ))}
@@ -120,16 +155,14 @@ export default function LancamentoNotas() {
         <select
           value={atividadeSelecionada}
           onChange={(e) => handleAtividadeChange(e.target.value)}
-          className="border rounded p-2 w-full "
+          className="border rounded p-2 w-full"
           disabled={!disciplinaSelecionada}
         >
           <option value="" disabled>Selecione a atividade</option>
-          {atividades
-            .filter(atividade => atividade.disciplinaId === disciplinaSelecionada)
-            .map((atividade) => (
-              <option key={atividade.id} value={atividade.id}>
-                {atividade.nome}
-              </option>
+          {atividades.map((atividade) => (
+            <option key={atividade._id} value={atividade._id}>
+              {atividade.nome}
+            </option>
           ))}
         </select>
       </div>
@@ -139,7 +172,7 @@ export default function LancamentoNotas() {
         placeholder="Buscar aluno..."
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
-        className="border rounded p-2 w-full mb-4 "
+        className="border rounded p-2 w-full mb-4"
         disabled={!atividadeSelecionada}
       />
 
@@ -158,12 +191,12 @@ export default function LancamentoNotas() {
             max="100"
             value={aluno.nota}
             onChange={(e) => handleNotaChange(aluno.id_aluno, e.target.value)}
-            className="border rounded p-2 w-full "
+            className="border rounded p-2 w-full"
             disabled={notasLançadas.includes(aluno.id_aluno)}
           />
           <button
             onClick={() => handleSubmit(aluno.id_aluno)}
-            className={`flex justify-center items-center py-2 px-4 rounded-lg  ${
+            className={`flex justify-center items-center py-2 px-4 rounded-lg ${
               notasLançadas.includes(aluno.id_aluno)
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -178,14 +211,13 @@ export default function LancamentoNotas() {
 
       <button
         onClick={handleSubmitAll}
-        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 "
+        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
         disabled={notas.every((n) => notasLançadas.includes(n.id_aluno))}
       >
         <CheckCircleIcon className="w-5 h-5 mr-2" />
         Lançar todas as notas preenchidas
       </button>
 
-      {/* Modal de Confirmação */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm z-50 p-4">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
@@ -194,20 +226,20 @@ export default function LancamentoNotas() {
                 ? "Deseja lançar todas as notas preenchidas?"
                 : "Deseja lançar a nota deste aluno?"}
             </h2>
-            <p className="text-gray-600  mt-2">
-              Disciplina: {disciplinas.find(d => d.id === disciplinaSelecionada)?.nome}<br />
-              Atividade: {atividades.find(a => a.id === atividadeSelecionada)?.nome}
+            <p className="text-gray-600 mt-2">
+              Disciplina: {disciplinas.find(d => d.codigo_disciplina === disciplinaSelecionada)?.nome}<br />
+              Atividade: {atividades.find(a => a._id === atividadeSelecionada)?.nome}
             </p>
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition "
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmacaoModal}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition "
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
               >
                 Confirmar
               </button>

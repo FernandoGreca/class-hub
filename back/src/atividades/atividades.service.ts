@@ -75,33 +75,32 @@ export class AtividadesService {
 
   async notaAlunoAtividade(notaAlunoAtividade: CreateNotaAlunoAtividadeDto) {
     let atividade = await this.findOne(notaAlunoAtividade.id_atividade);
-
+  
     if (!atividade) {
       return {
         mensagem: 'Atividade não encontrada',
       };
     }
-
+  
     if (notaAlunoAtividade.nota > atividade.nota) {
       return {
         mensagem: 'Nota não pode ser maior que a nota da atividade',
       };
     }
-
+  
     let alunoJaTemNota = false;
-
+  
     atividade.nota_alunos.forEach((nota) => {
       if (nota.id_aluno == notaAlunoAtividade.id_aluno) {
         nota.nota = notaAlunoAtividade.nota;
         alunoJaTemNota = true;
       }
     });
-
+  
     const cod_disciplina = atividade.disciplina;
-
-    const disciplina: Disciplina =
-        await this.disciplinaService.findOne(cod_disciplina);
-
+  
+    const disciplina: Disciplina = await this.disciplinaService.findOne(cod_disciplina);
+  
     if (!alunoJaTemNota) {
       disciplina.alunos.forEach((aluno) => {
         if (aluno._id == notaAlunoAtividade.id_aluno) {
@@ -113,22 +112,30 @@ export class AtividadesService {
         }
       });
     }
-
+  
+    // Atualiza a atividade no banco
     await this.atividadeModel.updateOne(
       { _id: notaAlunoAtividade.id_atividade },
       { $set: { nota_alunos: atividade.nota_alunos } },
     );
-
-    disciplina.atividades.push(atividade);
-
-    await this.disciplinaService.update(disciplina.codigo_disciplina, disciplina);
-
+  
+    // Atualiza a atividade existente na lista da disciplina, sem duplicar
+    const indexAtividade = disciplina.atividades.findIndex(
+      (a) => a._id.toString() === atividade._id.toString(),
+    );
+  
+    if (indexAtividade !== -1) {
+      disciplina.atividades[indexAtividade] = atividade;
+      await this.disciplinaService.update(disciplina.codigo_disciplina, disciplina);
+    }
+  
     return {
       mensagem: alunoJaTemNota
         ? 'Nota do aluno atualizada com sucesso!'
         : 'Nota do aluno inserida com sucesso!',
     };
   }
+  
 
   // Métodos
   async existeDisciplina(codigo_disciplina: string): Promise<boolean> {
