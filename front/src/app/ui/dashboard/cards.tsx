@@ -123,7 +123,9 @@ export default function Card({
               onClick={irParaPresencas}
               className={`text-white py-2 px-4 rounded-lg flex gap-2 items-center justify-center hover:bg-gray-900 r ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
             >
-              <CalendarIcon className="w-6 text-white" />
+              {role === "aluno" && (
+                <CalendarIcon className="w-6 text-white" />
+            )}
               Ver Presenças
             </button>
           </div>
