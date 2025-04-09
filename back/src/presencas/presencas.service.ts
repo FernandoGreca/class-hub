@@ -9,8 +9,6 @@ import { UpdatePresencaDto } from './dto/update-presenca.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Presenca } from './entities/presenca.entity';
 import { Model } from 'mongoose';
-import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
-import { User } from 'src/users/entities/user.entity';
 import { DisciplinasService } from 'src/disciplinas/disciplinas.service';
 import { UsersService } from 'src/users/users.service';
 

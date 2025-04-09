@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Disciplina } from 'src/disciplinas/entities/disciplina.entity';
-import { hash, genSalt, compare } from 'bcrypt';
+import { hash, genSalt } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -154,8 +154,8 @@ export class UsersService {
       usuario.toJSON();
 
     if (usuario.e_professor == true) {
-      const professor = disciplina.alunos.findIndex((aluno) =>
-        aluno._id.match(id_user),
+      const professor = disciplina.professores.findIndex((professor) =>
+        professor._id.match(professor._id),
       );
 
       if (professor === -1) {

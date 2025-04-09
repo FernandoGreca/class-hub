@@ -1,15 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDisciplinaDto } from './dto/create-disciplina.dto';
 import { UpdateDisciplinaDto } from './dto/update-disciplina.dto';
 import { Disciplina } from './entities/disciplina.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { exit } from 'process';
+import { UsersService } from 'src/users/users.service';
+import { AtividadesService } from 'src/atividades/atividades.service';
 
 @Injectable()
 export class DisciplinasService {
   constructor(
     @InjectModel(Disciplina.name) private disciplinaModel: Model<Disciplina>,
+    @Inject(forwardRef(() => UsersService)) private userService: UsersService,
+    @Inject(forwardRef(() => AtividadesService))
+    private atividadeService: AtividadesService,
   ) {}
 
   async create(createDisciplinaDto: CreateDisciplinaDto) {
@@ -56,6 +65,27 @@ export class DisciplinasService {
   }
 
   async remove(codigo_disciplina: string) {
+    const disciplina = await this.findOne(codigo_disciplina);
+
+    if (disciplina instanceof NotFoundException) {
+      return new NotFoundException('Disciplina não encontrada.');
+    }
+
+    for (const professor of disciplina.professores) {
+      await this.userService.removerDisciplina(
+        professor._id,
+        codigo_disciplina,
+      );
+    }
+
+    for (const aluno of disciplina.alunos) {
+      await this.userService.removerDisciplina(aluno._id, codigo_disciplina);
+    }
+
+    for (const atividade of disciplina.atividades) {
+      await this.atividadeService.remove(atividade._id);
+    }
+
     return await this.disciplinaModel.deleteOne({ codigo_disciplina }).exec();
   }
 
@@ -100,7 +130,7 @@ export class DisciplinasService {
     return {
       id_aluno: id_aluno,
       nome_aluno: aluno.nome,
-      media: media.toFixed(2), 
+      media: media.toFixed(2),
       quantidade_atividades: atividade_qtd,
       codigo_disciplina: codigo_disciplina,
       nome_disciplina: disciplina.nome,
