@@ -142,6 +142,7 @@ export default function LancamentoNotas() {
   );
 
   return (
+    <>
     <div className="p-4 sm:p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-lg font-semibold mb-4 text-center sm:text-left">Lançamento de Notas</h2>
 
@@ -255,5 +256,82 @@ export default function LancamentoNotas() {
         </div>
       )}
     </div>
+          <hr className="my-6 border-t border-gray-300" />
+
+          <h3 className="text-lg font-semibold mb-4 text-center sm:text-left">Buscar Nota de Aluno</h3>
+    
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <select
+              onChange={(e) => setDisciplinaSelecionada(e.target.value)}
+              value={disciplinaSelecionada}
+              className="border rounded p-2 w-full"
+            >
+              <option value="">Selecione a disciplina</option>
+              {disciplinas.map((disciplina) => (
+                <option key={disciplina.codigo_disciplina} value={disciplina.codigo_disciplina}>
+                  {disciplina.nome}
+                </option>
+              ))}
+            </select>
+    
+            <select
+              onChange={(e) => setAtividadeSelecionada(e.target.value)}
+              value={atividadeSelecionada}
+              className="border rounded p-2 w-full"
+              disabled={!disciplinaSelecionada}
+            >
+              <option value="">Selecione a atividade</option>
+              {atividades.map((atividade) => (
+                <option key={atividade._id} value={atividade._id}>
+                  {atividade.nome}
+                </option>
+              ))}
+            </select>
+    
+            <select
+              onChange={(e) => setAlunoSelecionado(e.target.value)}
+              value={alunoSelecionado ?? ""}
+              className="border rounded p-2 w-full"
+              disabled={!atividadeSelecionada}
+            >
+              <option value="">Selecione o aluno</option>
+              {todosAlunos.map((aluno) => (
+                <option key={aluno._id} value={aluno._id}>
+                  {aluno.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+    
+          {disciplinaSelecionada && atividadeSelecionada && alunoSelecionado && (
+            <div className="mt-2 p-4 bg-gray-100 rounded-lg shadow text-center">
+              {(() => {
+                const nota = notas.find(
+                  (n) => n.id_aluno === alunoSelecionado && n.id_atividade === atividadeSelecionada
+                );
+                return (
+                  <p className="text-gray-800">
+                    Nota do aluno{" "}
+                    <strong>
+                      {
+                        todosAlunos.find((a) => a._id === alunoSelecionado)?.nome
+                      }
+                    </strong>{" "}
+                    na atividade{" "}
+                    <strong>
+                      {
+                        atividades.find((a) => a._id === atividadeSelecionada)?.nome
+                      }
+                    </strong>
+                    :{" "}
+                    <span className="text-blue-700 font-semibold">
+                      {nota?.nota !== "" ? nota?.nota : "Nota não cadastrada"}
+                    </span>
+                  </p>
+                );
+              })()}
+            </div>
+          )}
+    </>
   );
 }
