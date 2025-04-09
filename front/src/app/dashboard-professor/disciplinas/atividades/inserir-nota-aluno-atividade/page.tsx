@@ -204,7 +204,7 @@ export default function LancamentoNotas() {
           />
           <button
             onClick={() => handleSubmit(aluno.id_aluno)}
-            className={`flex justify-center items-center py-2 px-4 rounded-lg ${
+            className={` cursor-pointer flex justify-center items-center py-2 px-4 rounded-lg ${
               notasLançadas.includes(aluno.id_aluno)
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -219,7 +219,7 @@ export default function LancamentoNotas() {
 
       <button
         onClick={handleSubmitAll}
-        className="mt-4 w-full flex justify-center items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+        className="mt-4 w-full cursor-pointer flex justify-center items-center bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-900"
         disabled={notas.every((n) => notasLançadas.includes(n.id_aluno))}
       >
         <CheckCircleIcon className="w-5 h-5 mr-2" />

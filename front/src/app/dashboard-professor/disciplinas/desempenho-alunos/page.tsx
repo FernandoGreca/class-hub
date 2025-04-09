@@ -1,101 +1,107 @@
 'use client';
+import { useEffect, useState } from "react";
 import { ChartBarIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 
 export default function RelatorioAlunos() {
+  const [disciplinas, setDisciplinas] = useState<any[]>([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState("");
+  const [alunos, setAlunos] = useState<any[]>([]);
+  const [relatorio, setRelatorio] = useState<any[]>([]);
   const [busca, setBusca] = useState("");
 
-  const disciplinas = [
-    { id: "MAT101", nome: "Matemática" },
-    { id: "PORT102", nome: "Português" },
-  ];
+  const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+  const user = typeof window !== "undefined" ? JSON.parse(sessionStorage.getItem("User") || "{}") : null;
+  const userId = user?._id || null;
 
-  const todosAlunos = [
-    { id: "101", nome: "João Silva", disciplinaId: "MAT101" },
-    { id: "102", nome: "Maria Souza", disciplinaId: "MAT101" },
-    { id: "103", nome: "Carlos Santos", disciplinaId: "PORT102" },
-    { id: "104", nome: "Ana Oliveira", disciplinaId: "MAT101" },
-    { id: "105", nome: "Pedro Lima", disciplinaId: "PORT102" },
-    { id: "106", nome: "Bruna Costa", disciplinaId: "MAT101" },
-  ];
+  useEffect(() => {
+    if (!userId || !token) return;
 
-  const todasNotas = [
-    { id_aluno: "101", disciplinaId: "MAT101", nota: 10 },
-    { id_aluno: "101", disciplinaId: "MAT101", nota: 80 },
-    { id_aluno: "102", disciplinaId: "MAT101", nota: 90 },
-    { id_aluno: "102", disciplinaId: "MAT101", nota: 100 },
-    { id_aluno: "103", disciplinaId: "PORT102", nota: 75 },
-    { id_aluno: "104", disciplinaId: "MAT101", nota: 60 },
-    { id_aluno: "104", disciplinaId: "MAT101", nota: 50 },
-    { id_aluno: "105", disciplinaId: "PORT102", nota: 40 },
-    { id_aluno: "106", disciplinaId: "MAT101", nota: 100 },
-  ];
+    fetch(`http://localhost:3000/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(async (data) => {
+        const disciplinasUser = await Promise.all(
+          data.disciplinas.map(async (disciplina: any) => {
+            const res = await fetch(`http://localhost:3000/disciplinas/${disciplina.codigo_disciplina}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            return res.json();
+          })
+        );
+        setDisciplinas(disciplinasUser);
+      });
+  }, [userId, token]);
 
-  const presencas = [
-    { id_aluno: "101", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "101", disciplinaId: "MAT101", presenca: false },
-    { id_aluno: "101", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "101", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "102", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "102", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "102", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "103", disciplinaId: "PORT102", presenca: false },
-    { id_aluno: "103", disciplinaId: "PORT102", presenca: false },
-    { id_aluno: "103", disciplinaId: "PORT102", presenca: true },
-    { id_aluno: "104", disciplinaId: "MAT101", presenca: false },
-    { id_aluno: "104", disciplinaId: "MAT101", presenca: false },
-    { id_aluno: "105", disciplinaId: "PORT102", presenca: true },
-    { id_aluno: "105", disciplinaId: "PORT102", presenca: false },
-    { id_aluno: "106", disciplinaId: "MAT101", presenca: true },
-    { id_aluno: "106", disciplinaId: "MAT101", presenca: true },
-  ];
+  const carregarRelatorio = async (codigo_disciplina: string, alunos: any[]) => {
+    const relatorioCompleto = await Promise.all(
+      alunos.map(async (aluno: any) => {
+        const mediaRes = await fetch(`http://localhost:3000/disciplinas/media-nota-aluno/${codigo_disciplina}/${aluno._id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const presencaRes = await fetch(`http://localhost:3000/presencas/lista-presenca-aluno/${codigo_disciplina}/${aluno._id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
+        const mediaData = await mediaRes.json();
+        const presencaData = await presencaRes.json();
+  
+        const presencas = Array.isArray(presencaData) ? presencaData : presencaData.presencas || [];
+  
+        const totalPresencas = presencas.length;
+        const totalPresentes = presencas.filter((p: any) => p.presenca === true).length;
+        const percentualPresenca = totalPresencas > 0 ? Math.round((totalPresentes / totalPresencas) * 100) : 0;
+  
+        let situacao = "Aprovado";
+        if (mediaData.media < 70 && percentualPresenca >= 75) {
+          situacao = "Reprovado por nota";
+        } else if (mediaData.media >= 70 && percentualPresenca < 75) {
+          situacao = "Reprovado por falta";
+        } else if (mediaData.media < 70 && percentualPresenca < 75) {
+          situacao = "Reprovado";
+        }
+  
+        return {
+          id: aluno._id,
+          nome: aluno.nome,
+          media: mediaData.media ?? 0,
+          presenca: percentualPresenca,
+          situacao
+        };
+      })
+    );
+  
+    setRelatorio(relatorioCompleto);
+  };
 
-  const alunosFiltrados = todosAlunos.filter(
-    (aluno) =>
-      aluno.disciplinaId === disciplinaSelecionada &&
-      aluno.nome.toLowerCase().includes(busca.toLowerCase())
+  const handleDisciplinaChange = async (codigo: string) => {
+    setDisciplinaSelecionada(codigo);
+    const disciplina = disciplinas.find((d) => d.codigo_disciplina === codigo);
+    const alunos = disciplina?.alunos || [];
+    setAlunos(alunos);
+    await carregarRelatorio(codigo, alunos);
+  };
+
+  const alunosFiltrados = relatorio.filter((aluno) =>
+    aluno.nome.toLowerCase().includes(busca.toLowerCase())
   );
 
-  const calcularMedia = (id_aluno: string) => {
-    const notasAluno = todasNotas.filter(
-      (nota) =>
-        nota.id_aluno === id_aluno && nota.disciplinaId === disciplinaSelecionada
-    );
-    if (notasAluno.length === 0) return null;
-    const media =
-      notasAluno.reduce((acc, cur) => acc + cur.nota, 0) / notasAluno.length;
-    return media;
-  };
-
-  const calcularPresenca = (id_aluno: string) => {
-    const presencasAluno = presencas.filter(
-      (p) => p.id_aluno === id_aluno && p.disciplinaId === disciplinaSelecionada
-    );
-    if (presencasAluno.length === 0) return null;
-
-    const presencasValidas = presencasAluno.filter((p) => p.presenca).length;
-    const percentual = (presencasValidas / presencasAluno.length) * 100;
-
-    return percentual;
-  };
-
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg">
-      <div className="flex justify-center items-center mb-4">
-        <ChartBarIcon className="w-6 h-6 mr-2" />
-        <h2 className="text-lg font-semibold">Relatório de Alunos</h2>
-      </div>
+    <div className="p-4 sm:p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-lg font-semibold mb-4 text-center sm:text-left flex items-center gap-2">
+        <ChartBarIcon className="w-6 h-6 text-blue-600" />
+        Relatório de Alunos
+      </h2>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <select
           value={disciplinaSelecionada}
-          onChange={(e) => setDisciplinaSelecionada(e.target.value)}
+          onChange={(e) => handleDisciplinaChange(e.target.value)}
           className="border rounded p-2 w-full"
         >
-          <option value="" disabled>Selecione a disciplina</option>
+          <option value="">Selecione a disciplina</option>
           {disciplinas.map((disciplina) => (
-            <option key={disciplina.id} value={disciplina.id}>
+            <option key={disciplina.codigo_disciplina} value={disciplina.codigo_disciplina}>
               {disciplina.nome}
             </option>
           ))}
@@ -107,70 +113,26 @@ export default function RelatorioAlunos() {
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           className="border rounded p-2 w-full"
-          disabled={!disciplinaSelecionada}
         />
       </div>
 
-      {/* Cabeçalho visível apenas em telas médias ou maiores */}
-      <div className="hidden md:grid grid-cols-4 gap-4 text-center font-bold mb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-4 font-bold text-black border-b pb-2 mb-2">
         <span>Aluno</span>
         <span>Média</span>
         <span>Presença</span>
         <span>Situação</span>
       </div>
 
-      {alunosFiltrados.map((aluno) => {
-        const media = calcularMedia(aluno.id);
-        const presenca = calcularPresenca(aluno.id);
-
-        let situacao;
-        if (media !== null && presenca !== null) {
-          if (media < 70 && presenca >= 75) {
-            situacao = "Reprovado por nota";
-          } else if (media >= 70 && presenca < 75) {
-            situacao = "Reprovado por falta";
-          } else if (media < 70 && presenca < 75) {
-            situacao = "Reprovado";
-          } else {
-            situacao = "Aprovado";
-          }
-        } else {
-          situacao = "Sem registros";
-        }
-
-        return (
-          <div
-            key={aluno.id}
-            className="flex flex-col md:grid md:grid-cols-4 gap-2 md:gap-4 border-b p-3 rounded-md hover:bg-gray-100 text-center"
-          >
-            <div>
-              <span className="md:hidden font-semibold">Aluno: </span>
-              {aluno.nome}
-            </div>
-
-            <div>
-              <span className="md:hidden font-semibold">Média: </span>
-              <span className={`font-semibold ${media !== null && media < 70 ? "text-red-500" : "text-gray-800"}`}>
-                {media !== null ? media.toFixed(1) : "Sem notas"}
-              </span>
-            </div>
-
-            <div>
-              <span className="md:hidden font-semibold">Presença: </span>
-              <span className={`font-semibold ${presenca !== null && presenca < 75 ? "text-red-500 font-bold" : "text-gray-800"}`}>
-                {presenca !== null ? `${presenca.toFixed(0)}%` : "Sem registros"}
-              </span>
-            </div>
-
-            <div>
-              <span className="md:hidden font-semibold">Situação: </span>
-              <span className={`font-semibold ${situacao.includes("Reprovado") ? "text-red-500 font-bold" : "text-green-600 font-semibold"}`}>
-                {situacao}
-              </span>
-            </div>
-          </div>
-        );
-      })}
+      {alunosFiltrados.map((aluno) => (
+        <div key={aluno.id} className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center mb-3">
+          <span>{aluno.nome}</span>
+          <span>{aluno.media}</span>
+          <span>{aluno.presenca}%</span>
+          <span className={aluno.situacao === "Aprovado" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+            {aluno.situacao}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
