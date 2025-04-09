@@ -11,9 +11,10 @@ import { DisciplinasModule } from 'src/disciplinas/disciplinas.module';
     MongooseModule.forFeature([
       { name: Atividade.name, schema: AtividadeSchema },
     ]),
-    forwardRef(() => DisciplinasModule)
+    forwardRef(() => DisciplinasModule),
   ],
   controllers: [AtividadesController],
   providers: [AtividadesService],
+  exports: [AtividadesService],
 })
 export class AtividadesModule {}
