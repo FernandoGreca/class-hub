@@ -96,7 +96,7 @@ export class AtividadesService {
 
     // Remove o ID da atividade do array de atividades da disciplina
     disciplina.atividades = disciplina.atividades.filter(
-      (atividadeId) => atividadeId.toString() !== id,
+      (listaAtividade) => listaAtividade._id !== id,
     );
 
     // Atualiza a disciplina no banco
