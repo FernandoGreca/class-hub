@@ -70,7 +70,7 @@ export default function DashboardDisicplinaProfessor() {
                 {role === "professor" && (
                     <button
                         onClick={() => setShowModal(true)}
-                        className="flex gap-1 items-center cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                        className="flex gap-1 items-center cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                     >
                         <PlusIcon className="h-6 w-6" />
                         Cadastrar Disciplina
@@ -99,7 +99,7 @@ export default function DashboardDisicplinaProfessor() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-gray-100 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg max-w-xl w-full relative">
                         <button
                             onClick={() => setShowModal(false)}

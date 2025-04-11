@@ -83,7 +83,7 @@ export default function SideNav() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm  z-[9999]">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
             <h2 className="text-lg font-semibold text-gray-800">Tem certeza que deseja sair?</h2>
             <div className="mt-4 flex justify-center gap-4">

@@ -61,8 +61,8 @@ export default function IngressarDisciplina() {
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-96">
             <h3 className="text-xl font-semibold mb-4">Ingressar em uma disciplina</h3>
 
             <label className="block text-sm text-gray-700 mb-1">
