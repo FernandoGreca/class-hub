@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { PlusIcon } from "@heroicons/react/24/outline";
+
 
 export default function IngressarDisciplina() {
   const [showModal, setShowModal] = useState(false);
@@ -52,8 +54,9 @@ export default function IngressarDisciplina() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        className="bg-blue-600 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
       >
+        <PlusIcon className="w-6 h-6"/>
         Ingressar em uma disciplina
       </button>
 

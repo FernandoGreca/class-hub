@@ -131,7 +131,7 @@ export default function Card({
           </div>
         )}
 
-        <div className="absolute top-2 left-2 z-[9999]">
+        <div className="absolute top-2 left-2">
           <Dropdown nomeDisciplina={nomeDisciplina} userType={"professor"} />
         </div>
       </div>
