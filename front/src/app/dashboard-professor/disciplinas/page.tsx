@@ -59,7 +59,13 @@ export default function DashboardDisicplinaProfessor() {
     if (isLoading) {
         return <p>Carregando...</p>;
     }
+    const coresDisponiveis = ["blue", "purple", "gray"];
 
+    // Função para embaralhar o array
+    const embaralharCores = (array: string[]) => {
+        return [...array].sort(() => Math.random() - 0.5);
+    };
+    const coresEmbaralhadas = embaralharCores(coresDisponiveis);
     return (
         <>
             <div className="flex justify-between items-center mb-4">
@@ -80,18 +86,22 @@ export default function DashboardDisicplinaProfessor() {
 
             <div className="flex flex-wrap gap-8">
                 {disciplinas.length > 0 ? (
-                    disciplinas.map((disciplina: any) => (
-                        <Card
-                            key={disciplina._id}
-                            nomeDisciplina={disciplina.nome}
-                            fotoPerfil={undefined}
-                            nomeProfessor={disciplina.professores ? disciplina.professores[0] : "Professor Desconhecido"}
-                            buttonBgColor="purple"
-                            buttonBgColorHover="purple"
-                            onClick={() => irParaAtividades(disciplina.codigo_disciplina)}
-                            codigoDisciplina={disciplina.codigo_disciplina}
-                        />
-                    ))
+                    disciplinas.map((disciplina: any, index: number) => {
+                        // Se tiver mais disciplinas do que cores, reinicia o índice
+                        const cor = coresEmbaralhadas[index % coresEmbaralhadas.length];
+
+                        return (
+                            <Card
+                                key={disciplina._id}
+                                nomeDisciplina={disciplina.nome}
+                                fotoPerfil={undefined}
+                                nomeProfessor={disciplina.professores ? disciplina.professores[0] : "Professor Desconhecido"}
+                                buttonBgColor={cor}
+                                buttonBgColorHover={cor}
+                                codigoDisciplina={disciplina.codigo_disciplina}
+                            />
+                        );
+                    })
                 ) : (
                     <p>Não há disciplinas disponíveis.</p>
                 )}

@@ -37,13 +37,7 @@ export default function SideNav() {
           href="#"
         >
           <div className="w-32 text-white md:w-40">
-            <Image 
-              src='/next.svg'
-              alt="Logo"
-              width={100}
-              height={40}
-              className="object-contain"
-            />
+          <h1 className="text-3xl font-bold text-white tracking-[2]">ClassHub</h1>
           </div>
         </Link>
         

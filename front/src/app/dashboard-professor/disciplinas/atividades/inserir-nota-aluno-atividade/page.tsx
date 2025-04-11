@@ -11,7 +11,6 @@ export default function LancamentoNotas() {
   const [notas, setNotas] = useState<any[]>([]);
   const [notasLançadas, setNotasLançadas] = useState<string[]>([]);
   const [busca, setBusca] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [acaoModal, setAcaoModal] = useState<"individual" | "todas" | null>(null);
   const [alunoSelecionado, setAlunoSelecionado] = useState<string | null>(null);

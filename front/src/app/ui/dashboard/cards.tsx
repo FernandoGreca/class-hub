@@ -114,14 +114,14 @@ export default function Card({
             {role === "professor" && (
               <button
                 onClick={onClick}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                className="bg-blue-600 text-white text-[15px] py-2 px-4 rounded-lg hover:bg-blue-700"
               >
                 Ver Atividades
               </button>
             )}
             <button
               onClick={irParaPresencas}
-              className={`text-white py-2 px-4 rounded-lg flex gap-2 items-center justify-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
+              className={`text-white py-2 px-4 text-[15px] rounded-lg flex gap-2 items-center justify-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
             >
               {role === "aluno" && (
                 <CalendarIcon className="w-6 text-white" />

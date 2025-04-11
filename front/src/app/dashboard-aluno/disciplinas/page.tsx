@@ -40,7 +40,7 @@ export default function Dashboard() {
   }
 
 
-  const coresDisponiveis = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "gray"];
+  const coresDisponiveis = ["blue", "purple", "gray"];
 
   // Função para embaralhar o array
   const embaralharCores = (array: string[]) => {

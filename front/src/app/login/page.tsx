@@ -80,6 +80,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold text-center text-gray-700 mb-2 tracking-[2]">ClassHub</h1>
         <h2 className="text-2xl font-semibold text-center text-gray-700">
           Login
         </h2>
@@ -122,73 +123,73 @@ export default function LoginPage() {
       </div>
 
       {showCadastro && (
-  <div className="fixed inset-0 bg-gray-100 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-      <button
-        onClick={() => setShowCadastro(false)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-      >
-        ✕
-      </button>
-      <h3 className="text-xl font-semibold mb-4 text-center">Cadastro</h3>
-      <form onSubmit={handleCadastro} className="space-y-4">
-        <div>
-          <label className="block text-gray-700 mb-1">Nome</label>
-          <input
-            type="text"
-            placeholder="Digite seu nome"
-            value={nomeCadastro}
-            onChange={(e) => setNomeCadastro(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+        <div className="fixed inset-0 bg-gray-100 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+            <button
+              onClick={() => setShowCadastro(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-semibold mb-4 text-center">Cadastro</h3>
+            <form onSubmit={handleCadastro} className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1">Nome</label>
+                <input
+                  type="text"
+                  placeholder="Digite seu nome"
+                  value={nomeCadastro}
+                  onChange={(e) => setNomeCadastro(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  placeholder="Digite seu email"
+                  value={emailCadastro}
+                  onChange={(e) => setEmailCadastro(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Senha</label>
+                <input
+                  type="password"
+                  placeholder="Digite uma senha"
+                  value={senhaCadastro}
+                  onChange={(e) => setSenhaCadastro(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Ano de Ingresso</label>
+                <input
+                  type="number"
+                  placeholder="Ex: 2024"
+                  value={anoCadastro}
+                  onChange={(e) => setAnoCadastro(Number(e.target.value))}
+                  className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full px-3 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              >
+                Cadastrar
+              </button>
+              {mensagemCadastro && (
+                <p className="text-center text-sm mt-2">{mensagemCadastro}</p>
+              )}
+            </form>
+          </div>
         </div>
-        <div>
-          <label className="block text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            placeholder="Digite seu email"
-            value={emailCadastro}
-            onChange={(e) => setEmailCadastro(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 mb-1">Senha</label>
-          <input
-            type="password"
-            placeholder="Digite uma senha"
-            value={senhaCadastro}
-            onChange={(e) => setSenhaCadastro(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 mb-1">Ano de Ingresso</label>
-          <input
-            type="number"
-            placeholder="Ex: 2024"
-            value={anoCadastro}
-            onChange={(e) => setAnoCadastro(Number(e.target.value))}
-            className="w-full px-3 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full px-3 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-        >
-          Cadastrar
-        </button>
-        {mensagemCadastro && (
-          <p className="text-center text-sm mt-2">{mensagemCadastro}</p>
-        )}
-      </form>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }
