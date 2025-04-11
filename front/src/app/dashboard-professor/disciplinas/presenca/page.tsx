@@ -27,9 +27,16 @@ export default function RegistroPresenca() {
 
         const data = await res.json();
         const lista = data.disciplinas || [];
-        setDisciplinas(lista);
-        if (lista.length > 0) {
-          setDisciplinaSelecionada(lista[0].codigo_disciplina);
+
+        // Remove duplicatas com base no código da disciplina
+        const unicas = lista.filter(
+          (disciplina: { codigo_disciplina: any; }, index: any, self: any[]) =>
+            index === self.findIndex((d) => d.codigo_disciplina === disciplina.codigo_disciplina)
+        );
+
+        setDisciplinas(unicas);
+        if (unicas.length > 0) {
+          setDisciplinaSelecionada(unicas[0].codigo_disciplina);
         }
       } catch (error) {
         console.error("Erro ao buscar disciplinas:", error);

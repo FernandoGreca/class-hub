@@ -15,7 +15,7 @@ export default function RelatorioAlunos() {
 
   useEffect(() => {
     if (!userId || !token) return;
-
+  
     fetch(`http://localhost:3000/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -29,7 +29,15 @@ export default function RelatorioAlunos() {
             return res.json();
           })
         );
-        setDisciplinas(disciplinasUser);
+  
+        // ✅ Removendo duplicadas com base no código da disciplina
+        const disciplinasUnicas = disciplinasUser.reduce((acc: any[], curr: any) => {
+          const existe = acc.some(d => d.codigo_disciplina === curr.codigo_disciplina);
+          if (!existe) acc.push(curr);
+          return acc;
+        }, []);
+  
+        setDisciplinas(disciplinasUnicas);
       });
   }, [userId, token]);
 
