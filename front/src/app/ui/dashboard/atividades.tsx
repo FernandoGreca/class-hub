@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ClipboardDocumentIcon, PlusIcon, CalendarIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function Atividades() {
@@ -16,32 +16,67 @@ export default function Atividades() {
     useEffect(() => {
         setRole(sessionStorage.getItem("role") ?? null);
         setUserId(sessionStorage.getItem("userId") ?? null);
+    }, []);
 
+    useEffect(() => {
         async function fetchAtividades() {
-            if (!disciplinaAtual) return;
-
             try {
                 const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
-                if (!token) throw new Error("Token não encontrado");
+                if (!token || !userId) throw new Error("Token ou userId não encontrado");
 
-                const response = await fetch(`http://localhost:3000/disciplinas/${disciplinaAtual}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: "*/*",
-                    },
-                });
+                if (disciplinaAtual) {
+                    // Busca atividades de uma disciplina específica
+                    const response = await fetch(`http://localhost:3000/disciplinas/${disciplinaAtual}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "*/*",
+                        },
+                    });
 
-                if (!response.ok) throw new Error("Erro ao buscar dados da disciplina");
+                    if (!response.ok) throw new Error("Erro ao buscar dados da disciplina");
 
-                const data = await response.json();
-                if (!data.atividades) throw new Error("Nenhuma atividade encontrada");
+                    const data = await response.json();
+                    if (!data.atividades) throw new Error("Nenhuma atividade encontrada");
 
-                const atividadesUnicas = data.atividades.filter(
-                    (atividade: any, index: number, self: any[]) =>
-                        index === self.findIndex((a) => a._id === atividade._id)
-                );
+                    setAtividades(data.atividades);
+                } else {
+                    // Busca todas as disciplinas do aluno
+                    const response = await fetch(`http://localhost:3000/users/${userId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "*/*",
+                        },
+                    });
 
-                setAtividades(atividadesUnicas);
+                    if (!response.ok) throw new Error("Erro ao buscar disciplinas do aluno");
+
+                    const userData = await response.json();
+                    const disciplinas = userData.disciplinas || [];
+
+                    let todasAtividades: any[] = [];
+
+                    for (const d of disciplinas) {
+                        const res = await fetch(`http://localhost:3000/disciplinas/${d.codigo_disciplina}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                Accept: "*/*",
+                            },
+                        });
+
+                        if (res.ok) {
+                            const data = await res.json();
+                            todasAtividades = [...todasAtividades, ...(data.atividades || [])];
+                        }
+                    }
+
+                    // Remove duplicadas
+                    const atividadesUnicas = todasAtividades.filter(
+                        (atividade, index, self) =>
+                            index === self.findIndex((a) => a._id === atividade._id)
+                    );
+
+                    setAtividades(atividadesUnicas);
+                }
             } catch (error) {
                 setError(error instanceof Error ? error.message : "Erro desconhecido");
             } finally {
@@ -49,8 +84,10 @@ export default function Atividades() {
             }
         }
 
-        fetchAtividades();
-    }, [disciplinaAtual]);
+        if (userId) {
+            fetchAtividades();
+        }
+    }, [disciplinaAtual, userId]);
 
     if (loading) return <p className="text-gray-500 text-sm text-center mt-4">Carregando atividades...</p>;
     if (error) return <p className="text-red-500 text-sm text-center mt-4">{error}</p>;
@@ -70,7 +107,7 @@ export default function Atividades() {
     return (
         <>
             <div className="mt-4 mb-4 flex justify-end space-x-2">
-                {role === "professor" && (
+                {role === "professor" && disciplinaAtual && (
                     <button
                         onClick={handleCriarAtividade}
                         className="cursor-pointer flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
@@ -83,14 +120,17 @@ export default function Atividades() {
 
             <div className="w-full mx-auto bg-gray-100 p-4 rounded-lg shadow-md">
                 <div className="w-full flex justify-between items-center text-gray-700 font-semibold border-b pb-2">
-                    <span>Atividades de {disciplinaAtual || "todas as disciplinas"}</span>
+                    <span>
+                        {disciplinaAtual
+                            ? `Atividades de ${disciplinaAtual}`
+                            : "Atividades de todas as disciplinas"}
+                    </span>
                     <span>{atividades.length}</span>
                 </div>
 
                 <ul className="mt-2">
                     {atividades.length > 0 ? (
                         atividades.map((atividade) => {
-                            // Pega a nota do aluno logado (se for aluno)
                             let notaDoAluno = null;
                             if (role === "aluno" && atividade.nota_alunos && userId) {
                                 const notaEncontrada = atividade.nota_alunos.find(
@@ -123,7 +163,9 @@ export default function Atividades() {
 
                                     {role === "aluno" && (
                                         <div className="text-right text-sm text-gray-800 font-semibold whitespace-nowrap">
-                                            {notaDoAluno !== null ? `${notaDoAluno}/${atividade.nota}` : `--/${atividade.nota}`}
+                                            {notaDoAluno !== null
+                                                ? `${notaDoAluno}/${atividade.nota}`
+                                                : `--/${atividade.nota}`}
                                         </div>
                                     )}
                                 </li>
@@ -131,7 +173,7 @@ export default function Atividades() {
                         })
                     ) : (
                         <p className="text-gray-500 text-sm text-center mt-4">
-                            Nenhuma atividade encontrada para {disciplinaAtual}.
+                            Nenhuma atividade encontrada para {disciplinaAtual || "as disciplinas disponíveis"}.
                         </p>
                     )}
                 </ul>
