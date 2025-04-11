@@ -8,7 +8,7 @@ const colorMapping: Record<string, string> = {
   red: "bg-red-800",
   blue: "bg-blue-800",
   green: "bg-green-800",
-  yellow: "bg-yellow-500",
+  yellow: "bg-yellow-600",
   purple: "bg-purple-800",
   orange: "bg-orange-500",
   pink: "bg-pink-800",
@@ -19,7 +19,7 @@ const colorMappingHover: Record<string, string> = {
   red: "hover:bg-red-700",
   blue: "hover:bg-blue-700",
   green: "hover:bg-green-700",
-  yellow: "hover:bg-yellow-400",
+  yellow: "hover:bg-yellow-500",
   purple: "hover:bg-purple-700",
   orange: "hover:bg-orange-400",
   pink: "hover:bg-pink-700",
@@ -121,7 +121,7 @@ export default function Card({
             )}
             <button
               onClick={irParaPresencas}
-              className={`text-white py-2 px-4 rounded-lg flex gap-2 items-center justify-center hover:bg-gray-900 r ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
+              className={`text-white py-2 px-4 rounded-lg flex gap-2 items-center justify-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
             >
               {role === "aluno" && (
                 <CalendarIcon className="w-6 text-white" />
