@@ -4,6 +4,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -23,7 +25,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/login", {
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         email,
         senha,
       });
@@ -32,7 +34,7 @@ export default function LoginPage() {
       sessionStorage.setItem("token", token);
 
       const responseUser = await axios.get(
-        `http://localhost:3000/users/encontrar-por-email/${email}`,
+        `${API_BASE_URL}/users/encontrar-por-email/${email}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -54,7 +56,7 @@ export default function LoginPage() {
   const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/auth/cadastro-usuario", {
+      await axios.post(`${API_BASE_URL}/auth/cadastro-usuario`, {
         nome: nomeCadastro,
         email: emailCadastro,
         senha: senhaCadastro,
@@ -80,7 +82,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center text-gray-700 mb-2 tracking-[2]">ClassHub</h1>
+        <h1 className="text-3xl font-bold text-center text-gray-700 mb-2 tracking-[2]">
+          ClassHub
+        </h1>
         <h2 className="text-2xl font-semibold text-center text-gray-700">
           Login
         </h2>
@@ -167,7 +171,9 @@ export default function LoginPage() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 mb-1">Ano de Ingresso</label>
+                <label className="block text-gray-700 mb-1">
+                  Ano de Ingresso
+                </label>
                 <input
                   type="number"
                   placeholder="Ex: 2024"

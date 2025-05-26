@@ -1,24 +1,33 @@
-'use client';
+"use client";
 import { useState, useEffect } from "react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 export default function RegistroPresenca() {
-  const [dataRegistro, setDataRegistro] = useState(new Date().toISOString().split("T")[0]);
-  const [disciplinas, setDisciplinas] = useState<{ codigo_disciplina: string; nome: string }[]>([]);
+  const [dataRegistro, setDataRegistro] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [disciplinas, setDisciplinas] = useState<
+    { codigo_disciplina: string; nome: string }[]
+  >([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState("");
   const [presencas, setPresencas] = useState<any[]>([]);
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const token = typeof window !== 'undefined' ? sessionStorage.getItem("token") : null;
-  const userId = typeof window !== 'undefined' ? sessionStorage.getItem("userId") : null;
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+  const token =
+    typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+  const userId =
+    typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
 
   useEffect(() => {
     async function fetchDisciplinasDoProfessor() {
       if (!userId || !token) return;
 
       try {
-        const res = await fetch(`http://localhost:3000/users/${userId}`, {
+        const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "*/*",
@@ -28,10 +37,12 @@ export default function RegistroPresenca() {
         const data = await res.json();
         const lista = data.disciplinas || [];
 
-        // Remove duplicatas com base no código da disciplina
         const unicas = lista.filter(
-          (disciplina: { codigo_disciplina: any; }, index: any, self: any[]) =>
-            index === self.findIndex((d) => d.codigo_disciplina === disciplina.codigo_disciplina)
+          (disciplina: { codigo_disciplina: any }, index: any, self: any[]) =>
+            index ===
+            self.findIndex(
+              (d) => d.codigo_disciplina === disciplina.codigo_disciplina
+            )
         );
 
         setDisciplinas(unicas);
@@ -44,19 +55,22 @@ export default function RegistroPresenca() {
     }
 
     fetchDisciplinasDoProfessor();
-  }, [userId, token]);
+  }, [userId, token, API_BASE_URL]);
 
   useEffect(() => {
     async function fetchAlunosDaDisciplina() {
       if (!disciplinaSelecionada || !token) return;
 
       try {
-        const res = await fetch(`http://localhost:3000/disciplinas/${disciplinaSelecionada}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "*/*",
-          },
-        });
+        const res = await fetch(
+          `${API_BASE_URL}/disciplinas/${disciplinaSelecionada}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "*/*",
+            },
+          }
+        );
 
         const data = await res.json();
         const alunos = data.alunos || [];
@@ -76,24 +90,29 @@ export default function RegistroPresenca() {
     }
 
     fetchAlunosDaDisciplina();
-  }, [disciplinaSelecionada, dataRegistro, token]);
+  }, [disciplinaSelecionada, dataRegistro, token, API_BASE_URL]);
 
   const handlePresencaChange = (id_aluno: string) => {
     setPresencas((prev) =>
-      prev.map((p) => (p.id_aluno === id_aluno ? { ...p, presenca: !p.presenca } : p))
+      prev.map((p) =>
+        p.id_aluno === id_aluno ? { ...p, presenca: !p.presenca } : p
+      )
     );
   };
 
   const handleConfirmSubmit = async () => {
     try {
       const promises = presencas.map((presenca) =>
-        fetch("http://localhost:3000/presencas", {
+        fetch(`${API_BASE_URL}/presencas`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ ...presenca, data: new Date(dataRegistro).toISOString() }),
+          body: JSON.stringify({
+            ...presenca,
+            data: new Date(dataRegistro).toISOString(),
+          }),
         })
       );
 
@@ -179,7 +198,12 @@ export default function RegistroPresenca() {
               Tem certeza que deseja salvar a chamada?
             </h2>
             <p className="text-gray-600 text-sm mt-2">
-              Disciplina: {disciplinas.find(d => d.codigo_disciplina === disciplinaSelecionada)?.nome}
+              Disciplina:{" "}
+              {
+                disciplinas.find(
+                  (d) => d.codigo_disciplina === disciplinaSelecionada
+                )?.nome
+              }
             </p>
             <div className="mt-4 flex justify-center gap-4">
               <button

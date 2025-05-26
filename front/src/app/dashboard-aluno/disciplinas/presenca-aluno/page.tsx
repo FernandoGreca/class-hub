@@ -19,6 +19,7 @@ export default function HistoricoFaltaAluno() {
   const [dataSelecionada, setDataSelecionada] = useState('');
   const [datasDisponiveis, setDatasDisponiveis] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   // ✅ Corrige o horário para UTC-3 (Brasília)
   const ajustarParaBrasilia = (data: string | Date): Date => {
@@ -44,9 +45,14 @@ export default function HistoricoFaltaAluno() {
 
     const buscarPresencas = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/presencas/lista-presenca-aluno/${codigoDisciplina}/${idAluno}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await fetch(
+          `${API_BASE_URL}/presencas/lista-presenca-aluno/${codigoDisciplina}/${idAluno}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const dados: Presenca[] = await res.json();
 

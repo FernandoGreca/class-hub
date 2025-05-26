@@ -1,6 +1,9 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
-import { ArrowRightCircleIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowRightCircleIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/24/solid";
 
 export default function LancamentoNotas() {
   const [disciplinas, setDisciplinas] = useState<any[]>([]);
@@ -12,11 +15,16 @@ export default function LancamentoNotas() {
   const [notasLançadas, setNotasLançadas] = useState<string[]>([]);
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [acaoModal, setAcaoModal] = useState<"individual" | "todas" | null>(null);
+  const [acaoModal, setAcaoModal] = useState<"individual" | "todas" | null>(
+    null
+  );
   const [alunoSelecionado, setAlunoSelecionado] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);
 
-  const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const token =
+    typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
   const user =
     typeof window !== "undefined"
       ? JSON.parse(sessionStorage.getItem("User") || "{}")
@@ -26,31 +34,39 @@ export default function LancamentoNotas() {
 
   useEffect(() => {
     if (!userId || !token) return;
-    fetch(`http://localhost:3000/users/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+
+    fetch(`${API_BASE_URL}/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => res.json())
-      .then(async data => {
-        const disciplinasUser = await Promise.all(data.disciplinas.map(async (disciplina: any) => {
-          const res = await fetch(`http://localhost:3000/disciplinas/${disciplina.codigo_disciplina}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          return res.json();
-        }));
-  
+      .then((res) => res.json())
+      .then(async (data) => {
+        const disciplinasUser = await Promise.all(
+          data.disciplinas.map(async (disciplina: any) => {
+            const res = await fetch(
+              `${API_BASE_URL}/disciplinas/${disciplina.codigo_disciplina}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            return res.json();
+          })
+        );
+
         // ✅ Remover duplicatas de disciplinas com base no campo 'codigo_disciplina'
         const disciplinasUnicas = disciplinasUser.filter(
           (disciplina, index, self) =>
-            index === self.findIndex((d) => d.codigo_disciplina === disciplina.codigo_disciplina)
+            index ===
+            self.findIndex(
+              (d) => d.codigo_disciplina === disciplina.codigo_disciplina
+            )
         );
-  
+
         setDisciplinas(disciplinasUnicas);
       });
   }, [userId, token]);
-  
 
   const handleDisciplinaChange = (id: string) => {
-    const disciplina = disciplinas.find(d => d.codigo_disciplina === id);
+    const disciplina = disciplinas.find((d) => d.codigo_disciplina === id);
     if (!disciplina) return;
     setDisciplinaSelecionada(id);
     setAtividadeSelecionada("");
@@ -75,7 +91,7 @@ export default function LancamentoNotas() {
 
   const handleAtividadeChange = (id: string) => {
     setAtividadeSelecionada(id);
-    const alunos = todosAlunos.map(aluno => ({
+    const alunos = todosAlunos.map((aluno) => ({
       id_atividade: id,
       id_aluno: aluno._id,
       nome_aluno: aluno.nome,
@@ -93,19 +109,22 @@ export default function LancamentoNotas() {
   };
 
   const enviarNota = async (nota: any) => {
-    const res = await fetch("http://localhost:3000/atividades/inserir-nota-aluno-atividade", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        id_atividade: nota.id_atividade,
-        id_aluno: nota.id_aluno,
-        nome_aluno: nota.nome_aluno,
-        nota: Number(nota.nota),
-      }),
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/atividades/inserir-nota-aluno-atividade`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id_atividade: nota.id_atividade,
+          id_aluno: nota.id_aluno,
+          nome_aluno: nota.nome_aluno,
+          nota: Number(nota.nota),
+        }),
+      }
+    );
 
     if (!res.ok) {
       console.error("Erro ao enviar nota:", await res.text());
@@ -129,7 +148,7 @@ export default function LancamentoNotas() {
     setProcessando(true);
 
     if (acaoModal === "individual" && alunoSelecionado) {
-      const nota = notas.find(n => n.id_aluno === alunoSelecionado);
+      const nota = notas.find((n) => n.id_aluno === alunoSelecionado);
       if (nota) {
         await enviarNota(nota);
         setNotasLançadas((prev) => [...prev, alunoSelecionado]);
@@ -137,11 +156,16 @@ export default function LancamentoNotas() {
     }
 
     if (acaoModal === "todas") {
-      const notasValidas = notas.filter(n => n.nota !== "" && !notasLançadas.includes(n.id_aluno));
+      const notasValidas = notas.filter(
+        (n) => n.nota !== "" && !notasLançadas.includes(n.id_aluno)
+      );
       for (const nota of notasValidas) {
         await enviarNota(nota);
       }
-      setNotasLançadas((prev) => [...prev, ...notasValidas.map(n => n.id_aluno)]);
+      setNotasLançadas((prev) => [
+        ...prev,
+        ...notasValidas.map((n) => n.id_aluno),
+      ]);
     }
 
     setShowModal(false);
@@ -156,7 +180,9 @@ export default function LancamentoNotas() {
   return (
     <>
       <div className="p-4 sm:p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-lg font-semibold mb-4 text-center sm:text-left">Lançamento de Notas</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center sm:text-left">
+          Lançamento de Notas
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <select
@@ -164,9 +190,14 @@ export default function LancamentoNotas() {
             onChange={(e) => handleDisciplinaChange(e.target.value)}
             className="border rounded p-2 w-full"
           >
-            <option value="" disabled>Selecione a disciplina</option>
+            <option value="" disabled>
+              Selecione a disciplina
+            </option>
             {disciplinas.map((disciplina) => (
-              <option key={disciplina.codigo_disciplina} value={disciplina.codigo_disciplina}>
+              <option
+                key={disciplina.codigo_disciplina}
+                value={disciplina.codigo_disciplina}
+              >
                 {disciplina.nome}
               </option>
             ))}
@@ -178,7 +209,9 @@ export default function LancamentoNotas() {
             className="border rounded p-2 w-full"
             disabled={!disciplinaSelecionada}
           >
-            <option value="" disabled>Selecione a atividade</option>
+            <option value="" disabled>
+              Selecione a atividade
+            </option>
             {atividades.map((atividade) => (
               <option key={atividade._id} value={atividade._id}>
                 {atividade.nome}
@@ -203,7 +236,10 @@ export default function LancamentoNotas() {
         </div>
 
         {alunosFiltrados.map((aluno) => (
-          <div key={`${aluno.id_aluno}-${atividadeSelecionada}`} className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center mb-3">
+          <div
+            key={`${aluno.id_aluno}-${atividadeSelecionada}`}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center mb-3"
+          >
             <span className="font-medium">{aluno.nome_aluno}</span>
             <input
               type="number"
@@ -221,7 +257,9 @@ export default function LancamentoNotas() {
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               } text-white`}
-              disabled={aluno.nota === "" || notasLançadas.includes(aluno.id_aluno)}
+              disabled={
+                aluno.nota === "" || notasLançadas.includes(aluno.id_aluno)
+              }
             >
               <ArrowRightCircleIcon className="w-5 h-5 mr-1" />
               {notasLançadas.includes(aluno.id_aluno) ? "Lançado" : "Lançar"}
@@ -247,8 +285,15 @@ export default function LancamentoNotas() {
                   : "Deseja lançar a nota deste aluno?"}
               </h2>
               <p className="text-gray-600 mt-2">
-                Disciplina: {disciplinas.find(d => d.codigo_disciplina === disciplinaSelecionada)?.nome}<br />
-                Atividade: {atividades.find(a => a._id === atividadeSelecionada)?.nome}
+                Disciplina:{" "}
+                {
+                  disciplinas.find(
+                    (d) => d.codigo_disciplina === disciplinaSelecionada
+                  )?.nome
+                }
+                <br />
+                Atividade:{" "}
+                {atividades.find((a) => a._id === atividadeSelecionada)?.nome}
               </p>
               <div className="mt-4 flex justify-center gap-4">
                 <button
@@ -271,7 +316,9 @@ export default function LancamentoNotas() {
 
       <hr className="my-6 border-t border-gray-300" />
 
-      <h3 className="text-lg font-semibold mb-4 text-center sm:text-left">Buscar Nota de Aluno</h3>
+      <h3 className="text-lg font-semibold mb-4 text-center sm:text-left">
+        Buscar Nota de Aluno
+      </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <select
@@ -281,7 +328,10 @@ export default function LancamentoNotas() {
         >
           <option value="">Selecione a disciplina</option>
           {disciplinas.map((disciplina) => (
-            <option key={disciplina.codigo_disciplina} value={disciplina.codigo_disciplina}>
+            <option
+              key={disciplina.codigo_disciplina}
+              value={disciplina.codigo_disciplina}
+            >
               {disciplina.nome}
             </option>
           ))}
@@ -320,7 +370,9 @@ export default function LancamentoNotas() {
         <div className="mt-2 p-4 bg-gray-100 rounded-lg shadow text-center">
           {(() => {
             const nota = notas.find(
-              (n) => n.id_aluno === alunoSelecionado && n.id_atividade === atividadeSelecionada
+              (n) =>
+                n.id_aluno === alunoSelecionado &&
+                n.id_atividade === atividadeSelecionada
             );
             return (
               <p className="text-gray-800">

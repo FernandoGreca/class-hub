@@ -1,6 +1,6 @@
-'use client'
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+"use client";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface Presenca {
   _id: string;
@@ -18,12 +18,15 @@ interface Aluno {
 
 export default function PresencasRegistradas() {
   const searchParams = useSearchParams();
-  const codigoDisciplina = searchParams.get('codigo');
+  const codigoDisciplina = searchParams.get("codigo");
 
   const [presencas, setPresencas] = useState<Presenca[]>([]);
-  const [dataSelecionada, setDataSelecionada] = useState('');
+  const [dataSelecionada, setDataSelecionada] = useState("");
   const [datasDisponiveis, setDatasDisponiveis] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
   // ✅ Função que ajusta para o fuso de Brasília (UTC-3)
   const ajustarParaBrasilia = (data: string | Date): Date => {
@@ -35,9 +38,9 @@ export default function PresencasRegistradas() {
   const formatarData = (data: string | Date): string => {
     try {
       const dataAjustada = ajustarParaBrasilia(data);
-      return dataAjustada.toISOString().split('T')[0]; // formato 'YYYY-MM-DD'
+      return dataAjustada.toISOString().split("T")[0]; // formato 'YYYY-MM-DD'
     } catch {
-      return '';
+      return "";
     }
   };
 
@@ -46,25 +49,33 @@ export default function PresencasRegistradas() {
 
     const fetchPresencasEAlunos = async () => {
       try {
-        const token = sessionStorage.getItem('token');
+        const token = sessionStorage.getItem("token");
 
-        const resPresencas = await fetch(`http://localhost:3000/presencas/lista-presenca-disciplina/${codigoDisciplina}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const resPresencas = await fetch(
+          `${API_BASE_URL}/presencas/lista-presenca-disciplina/${codigoDisciplina}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const dadosPresencas = await resPresencas.json();
 
-        const presencasArray: Presenca[] = Array.isArray(dadosPresencas) ? dadosPresencas : [];
+        const presencasArray: Presenca[] = Array.isArray(dadosPresencas)
+          ? dadosPresencas
+          : [];
 
         if (presencasArray.length === 0) {
           setDatasDisponiveis([]);
           setPresencas([]);
-          setDataSelecionada('');
+          setDataSelecionada("");
           return;
         }
 
-        const resDisciplina = await fetch(`http://localhost:3000/disciplinas/${codigoDisciplina}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const resDisciplina = await fetch(
+          `${API_BASE_URL}/disciplinas/${codigoDisciplina}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const dadosDisciplina = await resDisciplina.json();
         const alunos: Aluno[] = dadosDisciplina.alunos || [];
 
@@ -76,15 +87,17 @@ export default function PresencasRegistradas() {
           };
         });
 
-        const datasUnicas = Array.from(new Set(
-          presencasComNome
-            .map(p => formatarData(p.data))
-            .filter((d): d is string => d !== '')
-        )).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+        const datasUnicas = Array.from(
+          new Set(
+            presencasComNome
+              .map((p) => formatarData(p.data))
+              .filter((d): d is string => d !== "")
+          )
+        ).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
         setPresencas(presencasComNome);
         setDatasDisponiveis(datasUnicas);
-        setDataSelecionada(datasUnicas[0] || '');
+        setDataSelecionada(datasUnicas[0] || "");
       } catch (error) {
         console.error("❌ Erro ao buscar presenças:", error);
       } finally {
@@ -111,7 +124,8 @@ export default function PresencasRegistradas() {
     return Object.values(porAluno);
   })();
 
-  if (!codigoDisciplina) return <p className="text-red-500">Código da disciplina não informado.</p>;
+  if (!codigoDisciplina)
+    return <p className="text-red-500">Código da disciplina não informado.</p>;
   if (loading) return <p>Carregando presenças...</p>;
 
   return (
@@ -119,7 +133,9 @@ export default function PresencasRegistradas() {
       <h1 className="text-xl font-bold mb-4">Presenças Registradas</h1>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Selecione uma data:</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Selecione uma data:
+        </label>
         <select
           value={dataSelecionada}
           onChange={(e) => setDataSelecionada(e.target.value)}
@@ -127,7 +143,7 @@ export default function PresencasRegistradas() {
         >
           {datasDisponiveis.map((dataIso) => (
             <option key={dataIso} value={dataIso}>
-              {ajustarParaBrasilia(dataIso).toLocaleDateString('pt-BR')}
+              {ajustarParaBrasilia(dataIso).toLocaleDateString("pt-BR")}
             </option>
           ))}
         </select>
@@ -146,14 +162,20 @@ export default function PresencasRegistradas() {
             {presencasFiltradas.map((p) => (
               <tr key={p._id}>
                 <td className="p-2 border">{p.nome_aluno}</td>
-                <td className="p-2 border">{ajustarParaBrasilia(p.data).toLocaleDateString('pt-BR')}</td>
-                <td className="p-2 border">{p.presenca ? 'Presente' : 'Faltou'}</td>
+                <td className="p-2 border">
+                  {ajustarParaBrasilia(p.data).toLocaleDateString("pt-BR")}
+                </td>
+                <td className="p-2 border">
+                  {p.presenca ? "Presente" : "Faltou"}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       ) : (
-        <p className="text-gray-600">Nenhuma presença registrada para essa data.</p>
+        <p className="text-gray-600">
+          Nenhuma presença registrada para essa data.
+        </p>
       )}
     </div>
   );

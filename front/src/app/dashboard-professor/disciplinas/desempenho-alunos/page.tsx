@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import { ChartBarIcon } from "@heroicons/react/24/outline";
 
@@ -9,57 +9,87 @@ export default function RelatorioAlunos() {
   const [relatorio, setRelatorio] = useState<any[]>([]);
   const [busca, setBusca] = useState("");
 
-  const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
-  const user = typeof window !== "undefined" ? JSON.parse(sessionStorage.getItem("User") || "{}") : null;
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+  const token =
+    typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+  const user =
+    typeof window !== "undefined"
+      ? JSON.parse(sessionStorage.getItem("User") || "{}")
+      : null;
   const userId = user?._id || null;
 
   useEffect(() => {
     if (!userId || !token) return;
-  
-    fetch(`http://localhost:3000/users/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+
+    fetch(`${API_BASE_URL}/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(async (data) => {
         const disciplinasUser = await Promise.all(
           data.disciplinas.map(async (disciplina: any) => {
-            const res = await fetch(`http://localhost:3000/disciplinas/${disciplina.codigo_disciplina}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await fetch(
+              `${API_BASE_URL}/disciplinas/${disciplina.codigo_disciplina}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
             return res.json();
           })
         );
-  
-        // ✅ Removendo duplicadas com base no código da disciplina
-        const disciplinasUnicas = disciplinasUser.reduce((acc: any[], curr: any) => {
-          const existe = acc.some(d => d.codigo_disciplina === curr.codigo_disciplina);
-          if (!existe) acc.push(curr);
-          return acc;
-        }, []);
-  
+
+        const disciplinasUnicas = disciplinasUser.reduce(
+          (acc: any[], curr: any) => {
+            const existe = acc.some(
+              (d) => d.codigo_disciplina === curr.codigo_disciplina
+            );
+            if (!existe) acc.push(curr);
+            return acc;
+          },
+          []
+        );
+
         setDisciplinas(disciplinasUnicas);
       });
-  }, [userId, token]);
+  }, [userId, token, API_BASE_URL]);
 
-  const carregarRelatorio = async (codigo_disciplina: string, alunos: any[]) => {
+  const carregarRelatorio = async (
+    codigo_disciplina: string,
+    alunos: any[]
+  ) => {
     const relatorioCompleto = await Promise.all(
       alunos.map(async (aluno: any) => {
-        const mediaRes = await fetch(`http://localhost:3000/disciplinas/media-nota-aluno/${codigo_disciplina}/${aluno._id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const presencaRes = await fetch(`http://localhost:3000/presencas/lista-presenca-aluno/${codigo_disciplina}/${aluno._id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-  
+        const mediaRes = await fetch(
+          `${API_BASE_URL}/disciplinas/media-nota-aluno/${codigo_disciplina}/${aluno._id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const presencaRes = await fetch(
+          `${API_BASE_URL}/presencas/lista-presenca-aluno/${codigo_disciplina}/${aluno._id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         const mediaData = await mediaRes.json();
         const presencaData = await presencaRes.json();
-  
-        const presencas = Array.isArray(presencaData) ? presencaData : presencaData.presencas || [];
-  
+
+        const presencas = Array.isArray(presencaData)
+          ? presencaData
+          : presencaData.presencas || [];
+
         const totalPresencas = presencas.length;
-        const totalPresentes = presencas.filter((p: any) => p.presenca === true).length;
-        const percentualPresenca = totalPresencas > 0 ? Math.round((totalPresentes / totalPresencas) * 100) : 0;
-  
+        const totalPresentes = presencas.filter(
+          (p: any) => p.presenca === true
+        ).length;
+        const percentualPresenca =
+          totalPresencas > 0
+            ? Math.round((totalPresentes / totalPresencas) * 100)
+            : 0;
+
         let situacao = "Aprovado";
         if (mediaData.media < 70 && percentualPresenca >= 75) {
           situacao = "Reprovado por nota";
@@ -68,17 +98,17 @@ export default function RelatorioAlunos() {
         } else if (mediaData.media < 70 && percentualPresenca < 75) {
           situacao = "Reprovado";
         }
-  
+
         return {
           id: aluno._id,
           nome: aluno.nome,
           media: mediaData.media ?? 0,
           presenca: percentualPresenca,
-          situacao
+          situacao,
         };
       })
     );
-  
+
     setRelatorio(relatorioCompleto);
   };
 
@@ -109,7 +139,10 @@ export default function RelatorioAlunos() {
         >
           <option value="">Selecione a disciplina</option>
           {disciplinas.map((disciplina) => (
-            <option key={disciplina.codigo_disciplina} value={disciplina.codigo_disciplina}>
+            <option
+              key={disciplina.codigo_disciplina}
+              value={disciplina.codigo_disciplina}
+            >
               {disciplina.nome}
             </option>
           ))}
@@ -132,11 +165,20 @@ export default function RelatorioAlunos() {
       </div>
 
       {alunosFiltrados.map((aluno) => (
-        <div key={aluno.id} className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center mb-3">
+        <div
+          key={aluno.id}
+          className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center mb-3"
+        >
           <span>{aluno.nome}</span>
           <span>{aluno.media}</span>
           <span>{aluno.presenca}%</span>
-          <span className={aluno.situacao === "Aprovado" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+          <span
+            className={
+              aluno.situacao === "Aprovado"
+                ? "text-green-600 font-semibold"
+                : "text-red-600 font-semibold"
+            }
+          >
             {aluno.situacao}
           </span>
         </div>

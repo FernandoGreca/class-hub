@@ -4,11 +4,13 @@ import { useState } from "react";
 import axios from "axios";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-
 export default function IngressarDisciplina() {
   const [showModal, setShowModal] = useState(false);
   const [codigoDisciplina, setCodigoDisciplina] = useState("");
   const [mensagem, setMensagem] = useState("");
+
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
   const handleAdicionar = async () => {
     const id_user = sessionStorage.getItem("userId");
@@ -21,16 +23,21 @@ export default function IngressarDisciplina() {
 
     try {
       // Adiciona o usuário na disciplina
-      await axios.post("http://localhost:3000/users/adicionar-usuario-disciplina", {
-        id_user,
-        codigo_disciplina: codigoDisciplina,
-      });
+      await axios.post(
+        `${API_BASE_URL}/users/adicionar-usuario-disciplina`,
+        {
+          id_user,
+          codigo_disciplina: codigoDisciplina,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       // Atualiza os dados do usuário no sessionStorage
-      const responseUser = await axios.get(
-        `http://localhost:3000/users/${id_user}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const responseUser = await axios.get(`${API_BASE_URL}/users/${id_user}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const updatedUser = responseUser.data;
       sessionStorage.setItem("User", JSON.stringify(updatedUser));
@@ -56,14 +63,16 @@ export default function IngressarDisciplina() {
         onClick={() => setShowModal(true)}
         className="bg-blue-600 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
       >
-        <PlusIcon className="w-6 h-6"/>
+        <PlusIcon className="w-6 h-6" />
         Ingressar em uma disciplina
       </button>
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-30 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-            <h3 className="text-xl font-semibold mb-4">Ingressar em uma disciplina</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              Ingressar em uma disciplina
+            </h3>
 
             <label className="block text-sm text-gray-700 mb-1">
               Código da Disciplina
@@ -75,7 +84,11 @@ export default function IngressarDisciplina() {
               onChange={(e) => setCodigoDisciplina(e.target.value)}
             />
 
-            {mensagem && <p className="mb-2 text-sm text-center text-blue-600">{mensagem}</p>}
+            {mensagem && (
+              <p className="mb-2 text-sm text-center text-blue-600">
+                {mensagem}
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
               <button
