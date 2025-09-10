@@ -170,41 +170,46 @@ export default function Atividades() {
               return (
                 <li
                   key={atividade._id}
-                  className="flex items-start justify-between space-x-3 p-3 hover:bg-gray-200 rounded-lg cursor-pointer"
+                  className="flex justify-between p-4 hover:bg-gray-100 rounded-lg cursor-pointer border border-gray-200 mt-1"
                 >
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                        <ClipboardDocumentIcon className="w-5 h-5 text-gray-700" />
-                      </div>
+                  <div className="flex space-x-4">
+                    {/* Ícone */}
+                    <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full">
+                      <ClipboardDocumentIcon className="w-6 h-6 text-gray-700" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-gray-900 font-medium">
-                        {atividade.nome}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Disciplina: {atividade.disciplina}
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        Data de entrega:{" "}
-                        {new Date(atividade.data_entrega).toLocaleDateString(
-                          "pt-BR"
-                        )}
-                      </p>
-                      <p className="text-gray-700 text-xs">
-                        Nota máxima: {atividade.nota}
-                      </p>
+
+                    {/* Conteúdo principal */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <p className="text-gray-900 font-semibold text-lg">{atividade.nome}</p>
+                        <p className="text-gray-600 text-sm mt-1 line-clamp-3">
+                          {atividade.descricao}
+                        </p>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap gap-4 text-sm">
+                        <p className="text-gray-700">
+                          <span className="font-medium">Disciplina:</span> {atividade.disciplina}
+                        </p>
+                        <p className="text-gray-500">
+                          <span className="font-medium">Entrega:</span>{" "}
+                          {new Date(atividade.data_entrega).toLocaleDateString("pt-BR")}
+                        </p>
+                        <p className="text-gray-700">
+                          <span className="font-medium">Nota máxima:</span> {atividade.nota}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
+                  {/* Nota do aluno */}
                   {role === "aluno" && (
-                    <div className="text-right text-sm text-gray-800 font-semibold whitespace-nowrap">
-                      {notaDoAluno !== null
-                        ? `${notaDoAluno}/${atividade.nota}`
-                        : `--/${atividade.nota}`}
+                    <div className="flex items-start text-right text-sm font-semibold text-gray-800 ml-4 whitespace-nowrap">
+                      {notaDoAluno !== null ? `${notaDoAluno}/${atividade.nota}` : `--/${atividade.nota}`}
                     </div>
                   )}
                 </li>
+
               );
             })
           ) : (

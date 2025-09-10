@@ -153,26 +153,20 @@ export class UsersService {
     const { disciplinas, e_professor, senha, ...filtro_aluno } =
       usuario.toJSON();
 
-    if (usuario.e_professor == true) {
-      const professor = disciplina.professores.findIndex((professor) =>
-        professor._id.match(professor._id),
+    if (usuario.e_professor === true) {
+      const professorIndex = disciplina.professores.findIndex(
+        (prof: any) => String(prof._id) === String(id_user),
       );
 
-      if (professor === -1) {
+      if (professorIndex === -1) {
         throw new ConflictException('Professor não leciona esta disciplina.');
       }
 
-      disciplina.professores.splice(professor, 1);
+      disciplina.professores.splice(professorIndex, 1);
 
       const disciplinaIndex = usuario.disciplinas.findIndex(
         (disc) => disc.codigo_disciplina === codigo_disciplina,
       );
-
-      if (disciplinaIndex === -1) {
-        throw new ConflictException(
-          'Disciplina não está associada ao professor.',
-        );
-      }
 
       usuario.disciplinas.splice(disciplinaIndex, 1);
     } else {

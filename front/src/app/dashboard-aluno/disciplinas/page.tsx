@@ -27,8 +27,6 @@ export default function Dashboard() {
       const parsedUser = JSON.parse(user);
       if (parsedUser && parsedUser.disciplinas) {
         setDisciplinas(parsedUser.disciplinas);
-      } else {
-        setDisciplinas([]);
       }
     }
 

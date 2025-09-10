@@ -130,7 +130,10 @@ export default function PresencasRegistradas() {
 
   return (
     <div className="p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-xl font-bold mb-4">Presenças Registradas</h1>
+      <h1 className="text-xl font-extrabold text-gray-800 mb-4">
+        Presenças Registradas na disciplina {codigoDisciplina}
+      </h1>
+
 
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-1">

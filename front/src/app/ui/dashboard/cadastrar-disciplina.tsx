@@ -21,6 +21,8 @@ export default function CadastrarDisciplina() {
 
       if (!token || !user?._id) throw new Error("Usuário não autenticado.");
 
+      if (!codigoDisciplina || codigoDisciplina == '') return alert('Preencha o códig da disciplina')
+
       const novaDisciplina = {
         nome,
         descricao,
@@ -85,53 +87,61 @@ export default function CadastrarDisciplina() {
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
-      <h2 className="text-2xl font-semibold mb-4">Cadastrar Nova Disciplina</h2>
+    <h2 className="text-2xl font-semibold mb-4">Cadastrar Nova Disciplina</h2>
 
-      <input
-        type="text"
-        placeholder="Nome da Disciplina"
-        className="w-full mb-2 p-2 border rounded"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-      />
+    <label className="block mb-1 font-medium" htmlFor="nomeDisciplina">Nome da Disciplina</label>
+    <input
+      id="nomeDisciplina"
+      type="text"
+      placeholder="Digite o nome da disciplina"
+      className="w-full mb-3 p-2 border rounded"
+      value={nome}
+      onChange={(e) => setNome(e.target.value)}
+    />
 
-      <textarea
-        placeholder="Descrição"
-        className="w-full mb-2 p-2 border rounded"
-        value={descricao}
-        onChange={(e) => setDescricao(e.target.value)}
-      ></textarea>
+    <label className="block mb-1 font-medium" htmlFor="descricaoDisciplina">Descrição</label>
+    <textarea
+      id="descricaoDisciplina"
+      placeholder="Descreva brevemente o conteúdo da disciplina"
+      className="w-full mb-3 p-2 border rounded"
+      value={descricao}
+      onChange={(e) => setDescricao(e.target.value)}
+    ></textarea>
 
-      <input
-        type="number"
-        placeholder="Carga Horária"
-        className="w-full mb-2 p-2 border rounded"
-        value={cargaHoraria}
-        onChange={(e) => setCargaHoraria(Number(e.target.value))}
-      />
+    <label className="block mb-1 font-medium" htmlFor="cargaHoraria">Carga Horária</label>
+    <input
+      id="cargaHoraria"
+      type="number"
+      placeholder="Informe a carga horária em horas"
+      className="w-full mb-3 p-2 border rounded"
+      value={cargaHoraria}
+      onChange={(e) => setCargaHoraria(Number(e.target.value))}
+    />
 
-      <input
-        type="text"
-        placeholder="Código da Disciplina. Ex: aux-039"
-        className="w-full mb-4 p-2 border rounded"
-        value={codigoDisciplina}
-        onChange={(e) => setCodigoDisciplina(e.target.value)}
-      />
+    <label className="block mb-1 font-medium" htmlFor="codigoDisciplina">Código da Disciplina</label>
+    <input
+      id="codigoDisciplina"
+      type="text"
+      placeholder="Ex: AUX-039"
+      className="w-full mb-4 p-2 border rounded"
+      value={codigoDisciplina}
+      onChange={(e) => setCodigoDisciplina(e.target.value)}
+    />
 
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={() => router.back()}
-          className="cursor-pointer px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={handleCadastrarDisciplina}
-          className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Cadastrar
-        </button>
-      </div>
+    <div className="flex justify-end gap-2">
+      <button
+        onClick={() => router.back()}
+        className="cursor-pointer px-4 py-2 bg-red-500 text-white rounded"
+      >
+        Cancelar
+      </button>
+      <button
+        onClick={handleCadastrarDisciplina}
+        className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        Cadastrar
+      </button>
     </div>
+  </div>
   );
 }

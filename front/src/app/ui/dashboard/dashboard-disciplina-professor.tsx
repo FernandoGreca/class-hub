@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Card from "@/app/ui/dashboard/cards";
 import CadastrarDisciplina from "@/app/ui/dashboard/cadastrar-disciplina";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import IngressarDisciplina from "./ingressar-disciplina";
 
 
 export default function DashboardDisicplinaProfessor() {
@@ -37,8 +38,6 @@ export default function DashboardDisicplinaProfessor() {
                 );
 
                 setDisciplinas(disciplinasUnicas);
-            } else {
-                setDisciplinas([]);
             }
         }
 
@@ -74,13 +73,19 @@ export default function DashboardDisicplinaProfessor() {
                 </h2>
 
                 {role === "professor" && (
-                    <button
+                    <div className="flex gap-2"><button
                         onClick={() => setShowModal(true)}
                         className="flex gap-1 items-center cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                     >
                         <PlusIcon className="h-6 w-6" />
                         Cadastrar Disciplina
                     </button>
+                    <div className="w-80">
+                                <IngressarDisciplina />
+                              </div>
+                              </div>
+                    
+                    
                 )}
             </div>
 
@@ -95,7 +100,7 @@ export default function DashboardDisicplinaProfessor() {
                                 key={disciplina._id}
                                 nomeDisciplina={disciplina.nome}
                                 fotoPerfil={undefined}
-                                nomeProfessor={disciplina.professores ? disciplina.professores[0] : "Professor Desconhecido"}
+                                nomeProfessor={disciplina.professores ? disciplina.professores[0].nome : "Professor Desconhecido"}
                                 buttonBgColor={cor}
                                 buttonBgColorHover={cor}
                                 codigoDisciplina={disciplina.codigo_disciplina}

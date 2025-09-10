@@ -32,12 +32,11 @@ export default function NavLinks({ isMobile }: { isMobile: boolean }) {
     { name: 'Lançar Notas', href: '/dashboard-professor/disciplinas/atividades/inserir-nota-aluno-atividade', icon: AcademicCapIcon },
     { name: 'Fazer Chamada', href: '/dashboard-professor/disciplinas/presenca', icon: ArrowRightStartOnRectangleIcon },
     { name: 'Relatório de Alunos', href: '/dashboard-professor/disciplinas/desempenho-alunos', icon:ChartBarIcon },
-    { name: 'Pessoas', href: '/dashboard-professor/disciplinas/pessoas', icon: UsersIcon }
   ] : [
     { name: 'Home', href: '/dashboard-aluno', icon: HomeIcon },
     { name: 'Disciplinas', href: '/dashboard-aluno/disciplinas', icon: DocumentDuplicateIcon },
     { name: 'Atividades', href: '/dashboard-aluno/disciplinas/atividades', icon: CheckCircleIcon },
-    { name: 'Pessoas', href: '/dashboard-aluno/disciplinas/pessoas', icon: UsersIcon }
+    { name: 'Relatório de Disciplina', href: '/dashboard-professor/disciplinas/desempenho-alunos', icon:ChartBarIcon },
   ];
 
   return (

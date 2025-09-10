@@ -1,7 +1,7 @@
 "use client";
 
 import AtividadesPendentes from "@/app/ui/dashboard/atividades-pendentes";
-import { ClipboardDocumentIcon, ExclamationTriangleIcon, SunIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentIcon, ExclamationTriangleIcon, SunIcon, UserPlusIcon } from "@heroicons/react/24/outline";
 
 export default function DashboardAluno() {
   const atividades = [
@@ -40,6 +40,29 @@ export default function DashboardAluno() {
           <div className="bg-gray-200 p-4 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold">Ver últimos avisos</h2>
             <ul className="mt-2">
+              {/* Aviso para Professores Novos */}
+              <li className="flex items-start mt-3 space-x-3 p-3 rounded-lg shadow bg-green-100 hover:bg-green-200 cursor-pointer transition">
+                {/* Ícone de aviso */}
+                <div className="w-8 h-8 bg-green-300 rounded-full flex items-center justify-center">
+                  <UserPlusIcon className="w-5 h-5 text-green-800" />
+                </div>
+
+                {/* Informações do aviso */}
+                <div className="flex flex-col gap-1">
+                  <p className="text-green-900 font-semibold">
+                    Novo Professor? Confirme sua conta
+                  </p>
+                  <p className="text-green-800 text-sm">
+                    Se você acabou de criar sua conta e é um professor, entre em contato conosco pelo e-mail para efetivar sua conta de docente.
+                  </p>
+                  <p className="text-green-800 text-sm" >Email: <span className="text-green-700 text-xs font-bold">efetivaprofessor@classhub.com</span></p>
+                  <p className="text-green-700 text-xs font-bold">
+                    Isso garantirá acesso completo às funcionalidades de professor.
+                  </p>
+                </div>
+              </li>
+
+
               {/* Aviso Feira de Ciências */}
               <li className="flex items-start mt-3 space-x-3 p-3 rounded-lg shadow bg-yellow-100 hover:bg-yellow-200 cursor-pointer transition">
                 {/* Ícone de aviso */}
@@ -82,6 +105,8 @@ export default function DashboardAluno() {
                   </p>
                 </div>
               </li>
+
+
             </ul>
           </div>
 

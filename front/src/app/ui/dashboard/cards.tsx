@@ -76,15 +76,9 @@ export default function Card({
   const irParaPresencas = () => {
     const storedRole = sessionStorage.getItem("role");
 
-    if (storedRole === "professor") {
-      router.push(
-        `/dashboard-professor/disciplinas/presenca/presencas-registradas?codigo=${encodeURIComponent(codigoDisciplina)}`
-      );
-    } else if (storedRole === "aluno") {
-      router.push(
-        `/dashboard-aluno/disciplinas/presenca-aluno?codigo=${encodeURIComponent(codigoDisciplina)}`
-      );
-    }
+    router.push(
+      `/dashboard-professor/disciplinas/presenca/presencas-registradas?codigo=${encodeURIComponent(codigoDisciplina)}`
+    );
   };
 
   return (
@@ -111,28 +105,20 @@ export default function Card({
 
         {role && (
           <div className="p-4 flex justify-center gap-2">
-            {role === "professor" && (
-              <button
-                onClick={onClick}
-                className="bg-blue-600 text-white text-[15px] py-2 px-4 rounded-lg hover:bg-blue-700"
-              >
-                Ver Atividades
-              </button>
-            )}
             <button
               onClick={irParaPresencas}
               className={`text-white py-2 px-4 text-[15px] rounded-lg flex gap-2 items-center justify-center ${colorMapping[buttonBgColor] || "bg-gray-800"} ${colorMappingHover[buttonBgColorHover] || "hover:bg-gray-700"}`}
             >
-              {role === "aluno" && (
-                <CalendarIcon className="w-6 text-white" />
-            )}
+              
+              <CalendarIcon className="w-6 text-white" />
+ 
               Ver Presenças
             </button>
           </div>
         )}
 
         <div className="absolute top-2 left-2">
-          <Dropdown nomeDisciplina={nomeDisciplina} userType={"professor"} />
+          <Dropdown codigoDisciplina={codigoDisciplina} userType={"professor"} />
         </div>
       </div>
     </div>

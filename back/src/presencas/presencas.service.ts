@@ -39,7 +39,6 @@ export class PresencasService {
       return new NotFoundException('Aluno não encontrado.');
     }
 
-    console.log(createPresencaDto);
     const presenca = new this.presencaModel(createPresencaDto);
     const resultado = await presenca.save();
 

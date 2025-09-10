@@ -4,26 +4,84 @@ import { useState, useEffect, useRef } from "react";
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid'; // Importando o ícone
 
 interface DropdownProps {
-  nomeDisciplina: string;
+  codigoDisciplina: string;
   userType: 'professor' | 'aluno'; // Supondo que você tenha o tipo de usuário como 'professor' ou 'aluno'
 }
 
-export default function Dropdown({ nomeDisciplina, userType }: DropdownProps) {
+export default function Dropdown({ codigoDisciplina, userType }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const irParaAtividades = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    // Verificando o tipo de usuário e criando a URL dinâmica
-    const baseURL = userType === 'professor'
-      ? '/dashboard-professor/disciplinas/atividades'
-      : '/dashboard-aluno/disciplinas/atividades';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    router.push(`${baseURL}?disciplina=${encodeURIComponent(nomeDisciplina)}`);
-    setOpen(false);
+  const cancelarInscricao = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    try {
+      const userStr = localStorage.getItem("User") || sessionStorage.getItem("User");
+      if (!userStr) {
+        console.error("Usuário não encontrado no localStorage");
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      const id_user = user._id;
+
+      const response = await fetch(`${API_BASE_URL}/users/remover-usuario-disciplina`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "*/*",
+        },
+        body: JSON.stringify({
+          id_user,
+          codigo_disciplina: codigoDisciplina, // ⚠️ aqui precisa ser o código da disciplina, não o nome
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao cancelar inscrição");
+      }
+
+      const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const usuarioAtualizado = await fetch(
+        `${API_BASE_URL}/users/${user._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!usuarioAtualizado.ok)
+        throw new Error("Erro ao buscar usuário atualizado");
+
+      const dadosAtualizados = await usuarioAtualizado.json();
+      sessionStorage.setItem("User", JSON.stringify(dadosAtualizados));
+
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      const userRole = sessionStorage.getItem("role") || localStorage.getItem("role");
+      const baseURL = userRole === 'professor'
+      ? '/dashboard-professor'
+      : '/dashboard-aluno';
+
+      router.push(`${baseURL}`);
+      setOpen(false);
+    }
   };
+
 
   // Fechar Dropdown ao clicar fora
   useEffect(() => {
@@ -61,7 +119,7 @@ export default function Dropdown({ nomeDisciplina, userType }: DropdownProps) {
           <li>
             <button
               className="w-full text-left font-bold px-4 py-2 hover:bg-red-100 rounded-md text-red-500"
-              onClick={(e) => e.stopPropagation()}
+              onClick={cancelarInscricao}
             >
               Cancelar Inscrição
             </button>

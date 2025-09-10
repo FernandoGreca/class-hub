@@ -8,6 +8,7 @@ export default function RelatorioAlunos() {
   const [alunos, setAlunos] = useState<any[]>([]);
   const [relatorio, setRelatorio] = useState<any[]>([]);
   const [busca, setBusca] = useState("");
+  const [role, setRole] = useState<string | null>(null);
 
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -19,8 +20,11 @@ export default function RelatorioAlunos() {
       ? JSON.parse(sessionStorage.getItem("User") || "{}")
       : null;
   const userId = user?._id || null;
+  
 
   useEffect(() => {
+    const userRole = sessionStorage.getItem("role") || localStorage.getItem("role");
+    setRole(userRole);
     if (!userId || !token) return;
 
     fetch(`${API_BASE_URL}/users/${userId}`, {
@@ -131,7 +135,7 @@ export default function RelatorioAlunos() {
         Relatório de Alunos
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div className="flex gap-4 mb-4">
         <select
           value={disciplinaSelecionada}
           onChange={(e) => handleDisciplinaChange(e.target.value)}
@@ -148,13 +152,14 @@ export default function RelatorioAlunos() {
           ))}
         </select>
 
+        {role === 'professor' && 
         <input
           type="text"
           placeholder="Buscar aluno..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           className="border rounded p-2 w-full"
-        />
+        />}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 font-bold text-black border-b pb-2 mb-2">
@@ -164,25 +169,28 @@ export default function RelatorioAlunos() {
         <span>Situação</span>
       </div>
 
-      {alunosFiltrados.map((aluno) => (
-        <div
-          key={aluno.id}
-          className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center mb-3"
-        >
-          <span>{aluno.nome}</span>
-          <span>{aluno.media}</span>
-          <span>{aluno.presenca}%</span>
-          <span
-            className={
-              aluno.situacao === "Aprovado"
-                ? "text-green-600 font-semibold"
-                : "text-red-600 font-semibold"
-            }
+      {(role === 'professor' ? alunosFiltrados : alunosFiltrados.filter(a => a.id === userId))
+        .map((aluno) => (
+          <div
+            key={aluno.id}
+            className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center mb-3"
           >
-            {aluno.situacao}
-          </span>
-        </div>
+            <span>{aluno.nome}</span>
+            <span>{aluno.media}</span>
+            <span>{aluno.presenca}%</span>
+            <span
+              className={
+                aluno.situacao === "Aprovado"
+                  ? "text-green-600 font-semibold"
+                  : "text-red-600 font-semibold"
+              }
+            >
+              {aluno.situacao}
+            </span>
+          </div>
       ))}
+
+
     </div>
   );
 }
