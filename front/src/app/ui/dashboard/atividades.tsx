@@ -1,20 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ClipboardDocumentIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useSearchParams, useRouter } from "next/navigation";
+import { ClipboardDocumentIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 export default function Atividades() {
-  const searchParams = useSearchParams();
-  const disciplinaAtual = searchParams.get("disciplina");
   const [atividades, setAtividades] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const router = useRouter();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [atividadeToDelete, setAtividadeToDelete] = useState<string | null>(null);
 
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+  // Captura a disciplina da URL ao carregar o componente
+  const getDisciplinaAtual = () => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("disciplina");
+    }
+    return null;
+  };
 
   useEffect(() => {
     setRole(sessionStorage.getItem("role") ?? null);
@@ -22,6 +29,7 @@ export default function Atividades() {
   }, []);
 
   useEffect(() => {
+    const disciplinaAtual = getDisciplinaAtual();
     async function fetchAtividades() {
       try {
         const token =
@@ -105,7 +113,7 @@ export default function Atividades() {
     if (userId) {
       fetchAtividades();
     }
-  }, [disciplinaAtual, userId, API_BASE_URL]);
+  }, [userId, API_BASE_URL]);
 
   if (loading)
     return (
@@ -117,20 +125,60 @@ export default function Atividades() {
     return <p className="text-red-500 text-sm text-center mt-4">{error}</p>;
 
   const handleCriarAtividade = () => {
+    const disciplinaAtual = getDisciplinaAtual();
     if (role === "professor") {
-      router.push(
-        `/dashboard-professor/disciplinas/atividades/criar?disciplina=${disciplinaAtual}`
-      );
+      window.location.href = `/dashboard-professor/disciplinas/atividades/criar?disciplina=${disciplinaAtual}`;
     } else {
-      alert("Você não tem permissão para criar atividades.");
+      // Use um modal ou notificação personalizada em vez de alert()
+      // para melhor experiência de usuário
     }
   };
 
-  const handleVerPresencas = () => {
-    router.push(
-      `/dashboard-aluno/disciplinas/presenca-aluno?disciplina=${disciplinaAtual}`
-    );
+  const handleExcluirAtividade = (atividadeId: string) => {
+    if (role === "professor") {
+      setAtividadeToDelete(atividadeId);
+      setShowConfirmModal(true);
+    }
   };
+
+  const confirmDelete = async () => {
+    if (!atividadeToDelete) return;
+
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) throw new Error("Token não encontrado.");
+
+      const response = await fetch(
+        `${API_BASE_URL}/atividades/${atividadeToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao apagar a atividade.");
+      }
+
+      // Remove a atividade da lista localmente
+      setAtividades(atividades.filter(ativ => ativ._id !== atividadeToDelete));
+      setAtividadeToDelete(null);
+      setShowConfirmModal(false);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Erro desconhecido ao apagar.");
+      setShowConfirmModal(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setAtividadeToDelete(null);
+    setShowConfirmModal(false);
+  };
+
+  const disciplinaAtual = getDisciplinaAtual();
 
   return (
     <>
@@ -202,14 +250,25 @@ export default function Atividades() {
                     </div>
                   </div>
 
-                  {/* Nota do aluno */}
-                  {role === "aluno" && (
-                    <div className="flex items-start text-right text-sm font-semibold text-gray-800 ml-4 whitespace-nowrap">
-                      {notaDoAluno !== null ? `${notaDoAluno}/${atividade.nota}` : `--/${atividade.nota}`}
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {/* Botão de Excluir para Professor */}
+                    {role === "professor" && (
+                      <button
+                        onClick={() => handleExcluirAtividade(atividade._id)}
+                        className="p-2 text-red-500 hover:text-red-700"
+                        title="Apagar atividade"
+                      >
+                        <TrashIcon className="w-6 h-6" />
+                      </button>
+                    )}
+                    {/* Nota do aluno */}
+                    {role === "aluno" && (
+                      <div className="flex items-start text-right text-sm font-semibold text-gray-800 ml-4 whitespace-nowrap">
+                        {notaDoAluno !== null ? `${notaDoAluno}/${atividade.nota}` : `--/${atividade.nota}`}
+                      </div>
+                    )}
+                  </div>
                 </li>
-
               );
             })
           ) : (
@@ -220,6 +279,29 @@ export default function Atividades() {
           )}
         </ul>
       </div>
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-80">
+            <h3 className="text-lg font-bold">Confirmação</h3>
+            <p className="mt-2 text-sm text-gray-600">Tem certeza que deseja apagar esta atividade? Esta ação não pode ser desfeita.</p>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
+              >
+                Apagar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
