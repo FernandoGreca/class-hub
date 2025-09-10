@@ -36,7 +36,7 @@ export class UsersService {
     let procurar_usuario = await this.userModel.findOne({ email }).exec();
 
     if (!procurar_usuario) {
-      return new NotFoundException('Usuário não encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
     return procurar_usuario;
@@ -46,7 +46,7 @@ export class UsersService {
     let procurar_usuario = await this.userModel.findOne({ email }).exec();
 
     if (!procurar_usuario) {
-      return new NotFoundException('Usuário não encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
     const { senha, ...usuarioFiltrado } = procurar_usuario.toJSON();
@@ -58,7 +58,7 @@ export class UsersService {
     let procurar_usuario = await this.userModel.findOne({ _id: id }).exec();
 
     if (!procurar_usuario) {
-      return new NotFoundException('Usuário não encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
     return procurar_usuario;
@@ -85,14 +85,14 @@ export class UsersService {
   async adicionarDisciplina(id_user: string, codigo_disciplina: string) {
     let usuario = await this.findOne(id_user);
 
-    if (usuario instanceof NotFoundException || usuario == null) return usuario;
+    if (usuario instanceof NotFoundException || usuario == null) throw new Error('Usuário não encontrado');
 
     let disciplina = await this.disciplinaModel.findOne({
       codigo_disciplina: codigo_disciplina,
     });
 
     if (disciplina instanceof NotFoundException || disciplina == null)
-      return disciplina;
+      throw new Error('disciplina não encontrada');
 
     const { professores, alunos, atividades, ...filtro_disciplina } =
       disciplina.toJSON();
@@ -139,14 +139,14 @@ export class UsersService {
   async removerDisciplina(id_user: string, codigo_disciplina: string) {
     let usuario = await this.findOne(id_user);
 
-    if (usuario instanceof NotFoundException || usuario == null) return usuario;
+    if (usuario instanceof NotFoundException || usuario == null) throw new Error('usuario não encontrado');
 
     let disciplina = await this.disciplinaModel.findOne({
       codigo_disciplina: codigo_disciplina,
     });
 
     if (disciplina instanceof NotFoundException || disciplina == null)
-      return disciplina;
+      throw new Error('disciplina não encontrada');
 
     const { professores, alunos, atividades, ...filtro_disciplina } =
       disciplina.toJSON();
@@ -217,7 +217,7 @@ export class UsersService {
         .exec();
       return { message: 'Senha alterada com sucesso!' };
     } else {
-      return { message: 'Erro ao alterar senha!' };
+      throw new Error('Erro ao alterar senha!');
     }
   }
 

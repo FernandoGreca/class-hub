@@ -24,7 +24,7 @@ export class AuthService {
 
     const senha_correta = await compare(senha, usuario.senha);
     if (!senha_correta)
-      return { message: 'Senha incorreta, tente novamente...' };
+      throw new Error('Senha incorreta, tente novamente...');
 
     const payload = { sub: usuario._id, email: usuario.email };
     return {
@@ -40,14 +40,3 @@ export class AuthService {
     return await this.usersService.alterarSenha(email, senha);
   }
 }
-// const usuario = await this.userModel.findOne({ email }).exec();
-
-// if (!usuario || !usuario.senha)
-//   return { message: 'Usuário não encontrado, tente novamente...' };
-
-// const senha_correta = await compare(senha, usuario.senha);
-// if (!senha_correta) return { message: 'Senha incorreta, tente novamente...' };
-
-// const token = await this.authService.signIn(email, senha);
-
-// return token;

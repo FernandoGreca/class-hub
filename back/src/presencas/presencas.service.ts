@@ -30,13 +30,13 @@ export class PresencasService {
       createPresencaDto.codigo_disciplina,
     );
     if (disciplina instanceof NotFoundException || !disciplina) {
-      return new NotFoundException('Disciplina não encontrada.');
+      throw new NotFoundException('Disciplina não encontrada.');
     }
 
     // Procura aluno
     const aluno = await this.userService.findOne(createPresencaDto.id_aluno);
     if (aluno instanceof NotFoundException || !aluno) {
-      return new NotFoundException('Aluno não encontrado.');
+      throw new NotFoundException('Aluno não encontrado.');
     }
 
     const presenca = new this.presencaModel(createPresencaDto);
@@ -55,7 +55,7 @@ export class PresencasService {
       .exec();
 
     if (!procurar_presenca) {
-      return new NotFoundException('Presença não encontrada.');
+      throw new NotFoundException('Presença não encontrada.');
     }
 
     return procurar_presenca;

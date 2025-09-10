@@ -22,23 +22,15 @@ export class AtividadesService {
     const dataEntrega = new Date(createAtividadeDto.data_entrega);
 
     if (!(await this.existeDisciplina(createAtividadeDto.disciplina))) {
-      return {
-        mensagem: 'Disciplina não encontrada',
-      };
+      throw new Error('Disciplina não encontrada');
     }
 
     if (dataEntrega.getDay() < new Date().getDay()) {
-      return {
-        mensagem: 'Data de entrega não pode ser menor que a data atual',
-      };
+      throw new Error('Data de entrega não pode ser menor que a data atual');
     }
 
     if (createAtividadeDto.nota != 100) {
-      return {
-        mensagem: 'Nota da atividade deve ser igual a 100',
-        explicacao:
-          'É essencial que a nota da atividade seja 100, pois o cálculo da média considera a soma de todas as notas do aluno em uma atividade, dividida pela quantidade total de atividades da disciplina.',
-      };
+      throw new Error('Nota da atividade deve ser igual a 100');
     }
 
     const nova_atividade = new this.atividadeModel(createAtividadeDto);
@@ -79,9 +71,7 @@ export class AtividadesService {
     const atividade = (await this.findOne(id)) as Atividade;
 
     if (!atividade) {
-      return {
-        message: 'Atividade não encontrada',
-      };
+      throw new Error('Atividade não encontrada');
     }
 
     const disciplina = await this.disciplinaService.findOne(
@@ -89,9 +79,7 @@ export class AtividadesService {
     );
 
     if (!disciplina) {
-      return {
-        message: 'Disciplina não encontrada',
-      };
+      throw new Error('Disciplina não encontrada');
     }
 
     // Remove o ID da atividade do array de atividades da disciplina
@@ -117,15 +105,11 @@ export class AtividadesService {
     let atividade = await this.findOne(notaAlunoAtividade.id_atividade);
 
     if (!atividade) {
-      return {
-        mensagem: 'Atividade não encontrada',
-      };
+      throw new Error('Atividade não encontrada');
     }
 
     if (notaAlunoAtividade.nota > atividade.nota) {
-      return {
-        mensagem: 'Nota não pode ser maior que a nota da atividade',
-      };
+      throw new Error('Nota não pode ser maior que a nota da atividade');
     }
 
     let alunoJaTemNota = false;

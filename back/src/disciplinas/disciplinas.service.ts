@@ -49,7 +49,7 @@ export class DisciplinasService {
       .exec();
 
     if (!procurar_disciplina) {
-      return new NotFoundException('Disciplina não encontrada.');
+      throw new NotFoundException('Disciplina não encontrada.');
     }
 
     return procurar_disciplina;
@@ -68,7 +68,7 @@ export class DisciplinasService {
     const disciplina = await this.findOne(codigo_disciplina);
 
     if (disciplina instanceof NotFoundException) {
-      return new NotFoundException('Disciplina não encontrada.');
+      throw new NotFoundException('Disciplina não encontrada.');
     }
 
     for (const professor of disciplina.professores) {
@@ -94,7 +94,7 @@ export class DisciplinasService {
 
     // Verifica se o resultado é uma exceção
     if (result instanceof NotFoundException) {
-      return { mensagem: 'Disciplina não encontrada' };
+      throw new Error('Disciplina não encontrada');
     }
 
     // Agora, TypeScript sabe que `result` é do tipo `Disciplina`
@@ -106,7 +106,7 @@ export class DisciplinasService {
     );
     const aluno = disciplina.alunos.find((aluno) => aluno._id === id_aluno);
     if (!estaMatriculado || !aluno) {
-      return { mensagem: 'Aluno não matriculado na disciplina' };
+      throw new Error('Aluno não matriculado na disciplina');
     }
 
     // Calcula a média do aluno na disciplina
@@ -123,7 +123,7 @@ export class DisciplinasService {
 
     // Evita divisão por zero
     if (atividade_qtd === 0) {
-      return { mensagem: 'Nenhuma atividade encontrada para o aluno' };
+      throw new Error('Nenhuma atividade encontrada para o aluno');
     }
 
     const media = nota_soma / atividade_qtd;
